@@ -10,7 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("CREATE VIEW `view_pemesanan_customer` AS select `p`.`pemesanan_id` AS `pemesanan_id`,`p`.`kode_pemesanan` AS `kode_pemesanan`,`u`.`nama` AS `customer`,`jp`.`tanggal_berangkat` AS `tanggal_berangkat`,`p`.`total_harga` AS `total_harga`,`p`.`status` AS `status` from ((`cloudtrip`.`pemesanan` `p` join `cloudtrip`.`users` `u` on((`p`.`user_id` = `u`.`user_id`))) join `cloudtrip`.`jadwal_penerbangan` `jp` on((`p`.`jadwal_id` = `jp`.`jadwal_id`)))");
+        DB::statement("CREATE VIEW `view_pemesanan_customer` AS select `p`.`pemesanan_id` AS `pemesanan_id`,`p`.`kode_pemesanan` AS `kode_pemesanan`,`u`.`name` AS `customer`,`jp`.`tanggal_berangkat` AS `tanggal_berangkat`,`p`.`total_harga` AS `total_harga`,`p`.`status` AS `status` from ((`cloudtrip`.`pemesanan` `p` join `cloudtrip`.`users` `u` on((`p`.`user_id` = `u`.`id`))) join `cloudtrip`.`jadwal_penerbangan` `jp` on((`p`.`jadwal_id` = `jp`.`jadwal_id`)))");
     }
 
     /**

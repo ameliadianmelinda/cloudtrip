@@ -1,32 +1,8 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CloudTrip - Travel Agency</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gray-50 font-inter">
-    <!-- Header Navigation -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
-                <div class="flex items-center">
-                    <img src="{{ asset('images/logo.png') }}" alt="CloudTrip Logo" class="h-8 w-auto">
-                    <h1 class="text-xl font-bold" style="background: linear-gradient(to right, #FFB894, #FB9590, #DC586D, #A33757, #852E4E, #4C1D3D); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">CloudTrip</h1>
-                </div>
-                
-                <!-- Sign In Button -->
-                <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition duration-200">
-                    Sign in
-                </button>
-            </div>
-        </div>
-    </header>
+@extends('layout.Header-cust')
 
+@section('title', 'Homepage - CloudTrip Travel Agency')
+
+@section('content')
     <!-- Hero Section -->
     <section class="py-12" style="background: linear-gradient(135deg, #FFF8E7 0%, #FFE8E5 50%, #F8E8F0 100%);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,7 +12,7 @@
                     CONVENIENT ONLINE<br>
                     <span class="text-blue-600">FLIGHT BOOKING SERVICES</span>
                 </h1>
-                
+
                 <!-- Airplane Image -->
                 <div class="flex justify-center mb-6 relative">
                     <div class="flex items-center justify-center" style="width: 550px; height: 250px;">
@@ -44,66 +20,89 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Flight Search Form -->
             <div class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl mx-auto">
-                <div class="flex flex-wrap gap-2 mb-5">
-                    <button class="bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-medium">One Way</button>
-                    <button class="text-gray-600 px-4 py-2 rounded-full text-sm hover:bg-gray-100">Round Trip</button>
-                    <button class="text-gray-600 px-4 py-2 rounded-full text-sm hover:bg-gray-100">Multi City</button>
-                </div>
-                
-                <div class="flex flex-wrap gap-2 items-end">
-                    <!-- From -->
-                    <div class="flex-1">
-                        <label class="block text-sm text-gray-600 mb-1">From</label>
-                        <div class="relative">
-                            <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option>Tokyo, Japan</option>
-                            </select>
+                <form action="{{ route('search.flights') }}" method="POST" id="flightSearchForm">
+                    @csrf
+                    <input type="hidden" name="trip_type" id="tripType" value="one_way">
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button type="button" id="oneWayBtn" class="px-4 py-2 rounded-full text-sm font-medium transition duration-300"
+                                style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%); color: #4B5563;">One Way</button>
+                        <button type="button" id="roundTripBtn" class="text-gray-600 px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition duration-300">Round Trip</button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <!-- From -->
+                        <div class="flex-1">
+                            <label class="block text-sm text-gray-600 mb-1">From</label>
+                            <div class="relative">
+                                <select name="from" class="w-full p-3 pr-12 pl-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white" required>
+                                    <option value="">Select departure city</option>
+                                    @foreach($bandaras as $bandara)
+                                        <option value="{{ $bandara->nama_bandara }}">{{ $bandara->nama_bandara }}, {{ $bandara->negara }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Swap Icon -->
+                        <div class="flex-shrink-0 flex items-center justify-center" style="margin-top: 24px;">
+                            <button type="button" id="swapBtn" class="h-14 w-14 rounded-full transition duration-300 hover:scale-105 hover:shadow-lg transform flex items-center justify-center"
+                                    style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%);">
+                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- To -->
+                        <div class="flex-1">
+                            <label class="block text-sm text-gray-600 mb-1">To</label>
+                            <div class="relative">
+                                <select name="to" class="w-full p-3 pr-12 pl-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white" required>
+                                    <option value="">Select destination city</option>
+                                    @foreach($bandaras as $bandara)
+                                        <option value="{{ $bandara->nama_bandara }}">{{ $bandara->nama_bandara }}, {{ $bandara->negara }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Departure -->
+                        <div class="flex-1">
+                            <label class="block text-sm text-gray-600 mb-1">Departure</label>
+                            <input type="date" name="departure_date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" min="{{ date('Y-m-d') }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                        </div>
+
+                        <!-- Return -->
+                        <div id="returnDateField" class="flex-1 hidden">
+                            <label class="block text-sm text-gray-600 mb-1">Return</label>
+                            <input type="date" name="return_date" value="{{ date('Y-m-d', strtotime('+7 days')) }}" min="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <!-- Search Button -->
+                        <div class="flex-shrink-0 flex items-center justify-center" style="margin-top: 24px;">
+                            <button type="submit" class="h-14 w-14 rounded-full transition duration-300 hover:scale-105 hover:shadow-lg transform flex items-center justify-center"
+                                    style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%);">
+                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                    
-                    <!-- Swap Icon -->
-                    <div class="flex-shrink-0 flex items-center justify-center mb-3">
-                        <button class="bg-blue-100 hover:bg-blue-200 p-3 rounded-full transition duration-200">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <!-- To -->
-                    <div class="flex-1">
-                        <label class="block text-sm text-gray-600 mb-1">To</label>
-                        <div class="relative">
-                            <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                <option>Berlin, Germany</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Departure -->
-                    <div class="flex-1">
-                        <label class="block text-sm text-gray-600 mb-1">Departure</label>
-                        <input type="date" value="2023-10-11" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                    
-                    <!-- Return -->
-                    <div class="flex-1">
-                        <label class="block text-sm text-gray-600 mb-1">Return</label>
-                        <input type="date" value="2023-12-15" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                    
-                    <!-- Search Button -->
-                    <div class="flex-shrink-0 flex items-center justify-center mb-3">
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition duration-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </section>
@@ -201,7 +200,7 @@
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">MOST POPULAR AIRLINES</h2>
                 <p class="text-gray-600">The world's leading airlines offer top-notch service, ensuring<br>memorable travel experiences for passengers.</p>
             </div>
-            
+
             <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
                 <!-- Philippine Airlines -->
                 <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition duration-200">
@@ -212,7 +211,7 @@
                     </div>
                     <h3 class="font-bold text-gray-900">PHILIPPINE</h3>
                 </div>
-                
+
                 <!-- Turkish Airlines -->
                 <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition duration-200">
                     <div class="h-20 bg-gradient-to-br from-red-400 to-red-600 rounded-lg flex items-center justify-center mb-4">
@@ -222,7 +221,7 @@
                     </div>
                     <h3 class="font-bold text-gray-900">TURKISH AIRLINES</h3>
                 </div>
-                
+
                 <!-- Emirates -->
                 <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition duration-200">
                     <div class="h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center mb-4">
@@ -235,7 +234,7 @@
                         →
                     </button>
                 </div>
-                
+
                 <!-- Qatar Airways -->
                 <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition duration-200">
                     <div class="h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center mb-4">
@@ -245,7 +244,7 @@
                     </div>
                     <h3 class="font-bold text-gray-900">QATAR AIRWAYS</h3>
                 </div>
-                
+
                 <!-- Additional Airline Slot -->
                 <div class="bg-white rounded-xl shadow-lg p-6 text-center hover:shadow-xl transition duration-200">
                     <div class="h-20 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-lg flex items-center justify-center mb-4">
@@ -266,7 +265,7 @@
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">BOOK YOUR HOTEL</h2>
                 <p class="text-gray-600">The world's leading airlines offer top-notch service, ensuring<br>memorable travel experiences for passengers.</p>
             </div>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Hotel 1 - Moxy NYC Downtown -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden group hover:shadow-xl transition duration-200">
@@ -304,12 +303,66 @@
             </div>
         </div>
     </section>
+@endsection
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-gray-400">© 2024 CloudTrip Travel Agency. All rights reserved.</p>
-        </div>
-    </footer>
-</body>
-</html>
+@push('scripts')
+<script>
+    // Get trip type buttons and return date field
+    const oneWayBtn = document.getElementById('oneWayBtn');
+    const roundTripBtn = document.getElementById('roundTripBtn');
+    const returnDateField = document.getElementById('returnDateField');
+    const tripTypeInput = document.getElementById('tripType');
+    const swapBtn = document.getElementById('swapBtn');
+    const fromSelect = document.querySelector('select[name="from"]');
+    const toSelect = document.querySelector('select[name="to"]');
+
+    // Function to handle One Way selection
+    function selectOneWay() {
+        // Update button styles
+        oneWayBtn.className = 'px-4 py-2 rounded-full text-sm font-medium transition duration-300';
+        oneWayBtn.style.cssText = 'background: linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%); color: #4B5563;';
+        roundTripBtn.className = 'text-gray-600 px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition duration-300';
+        roundTripBtn.style.cssText = '';
+
+        // Hide return date field
+        returnDateField.classList.add('hidden');
+        returnDateField.querySelector('input').removeAttribute('required');
+
+        // Update trip type
+        tripTypeInput.value = 'one_way';
+    }
+
+    // Function to handle Round Trip selection
+    function selectRoundTrip() {
+        // Update button styles
+        roundTripBtn.className = 'px-4 py-2 rounded-full text-sm font-medium transition duration-300';
+        roundTripBtn.style.cssText = 'background: linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%); color: #4B5563;';
+        oneWayBtn.className = 'text-gray-600 px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition duration-300';
+        oneWayBtn.style.cssText = '';
+
+        // Show return date field
+        returnDateField.classList.remove('hidden');
+        returnDateField.querySelector('input').setAttribute('required', '');
+
+        // Update trip type
+        tripTypeInput.value = 'round_trip';
+    }
+
+    // Function to swap from and to destinations
+    function swapDestinations() {
+        const fromValue = fromSelect.value;
+        const toValue = toSelect.value;
+
+        fromSelect.value = toValue;
+        toSelect.value = fromValue;
+    }
+
+    // Add event listeners
+    oneWayBtn.addEventListener('click', selectOneWay);
+    roundTripBtn.addEventListener('click', selectRoundTrip);
+    swapBtn.addEventListener('click', swapDestinations);
+
+    // Initialize with One Way selected (return field hidden)
+    selectOneWay();
+</script>
+@endpush

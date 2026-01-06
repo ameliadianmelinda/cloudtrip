@@ -5,10 +5,10 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\MaskapaiController;
 use App\Http\Controllers\BandaraController;
 use App\Http\Controllers\PesawatController;
+use App\Http\Controllers\HomepageController;
 
-Route::get('/', function () {
-    return view('customer.Homepage');
-});
+Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');
 
 Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 

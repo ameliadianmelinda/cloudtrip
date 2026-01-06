@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\MaskapaiController;
 use App\Http\Controllers\BandaraController;
@@ -33,6 +34,6 @@ Route::put('/pesawat/{id}', [PesawatController::class, 'update'])->name('pesawat
 Route::delete('/pesawat/{id}', [PesawatController::class, 'destroy'])->name('pesawat.destroy');
 
 Route::get('/logout', function () {
-    auth()->logout();
+    Auth::logout();
     return redirect('/');
 })->name('logout');

@@ -21,9 +21,9 @@
                 </div>
 
                 <!-- Sign In Button -->
-                <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition duration-200">
+                <a href="{{ route('login') }}" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition duration-200 inline-block text-center">
                     Sign in
-                </button>
+                </a>
             </div>
         </div>
     </header>

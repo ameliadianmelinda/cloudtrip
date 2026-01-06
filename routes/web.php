@@ -6,11 +6,20 @@ use App\Http\Controllers\MaskapaiController;
 use App\Http\Controllers\BandaraController;
 use App\Http\Controllers\PesawatController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\PemesananController;
 
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');
 
-Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+// Authentication routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
+Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
+
+Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard')->middleware('auth');
 
 Route::get('/maskapai', [MaskapaiController::class, 'index'])->name('maskapai');
 Route::get('/maskapai/create', [MaskapaiController::class, 'create'])->name('maskapai.create');
@@ -36,3 +45,23 @@ Route::get('/logout', function () {
     auth()->logout();
     return redirect('/');
 })->name('logout');
+
+// User management (admin)
+Route::get('/users', [UserController::class, 'index'])->name('users');
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+
+// Pemesanan (admin)
+Route::middleware('auth')->group(function(){
+    Route::get('/admin/pemesanan', [PemesananController::class, 'index'])->name('admin.pemesanan.index');
+    Route::get('/admin/pemesanan/{id}', [PemesananController::class, 'show'])->name('admin.pemesanan.show');
+    Route::put('/admin/pemesanan/{id}', [PemesananController::class, 'updateStatus'])->name('admin.pemesanan.updateStatus');
+});
+
+// Health check route for debugging
+Route::get('/status', function () {
+    return response('OK', 200);
+});

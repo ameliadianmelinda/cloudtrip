@@ -3,8 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>CloudTrip Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -123,6 +125,9 @@
             font-weight: 700;
         }
     </style>
+    <link href="{{ asset('css/admin-dashboard.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/admin-users.css') }}" rel="stylesheet">
+    @stack('styles')
 </head>
 <body>
     <div class="sidebar">
@@ -140,6 +145,12 @@
         <a href="{{ route('pesawat') }}" class="menu-item {{ request()->is('pesawat*') ? 'menu-active' : '' }}">
             <i class="bi bi-airplane-engines"></i> Pesawat
         </a>
+        <a href="{{ route('admin.pemesanan.index') }}" class="menu-item {{ request()->is('admin/pemesanan*') ? 'menu-active' : '' }}">
+            <i class="bi bi-receipt"></i> Pemesanan
+        </a>
+        <a href="{{ route('users') }}" class="menu-item {{ request()->is('users*') ? 'menu-active' : '' }}">
+            <i class="bi bi-people"></i> Users
+        </a>    
         <a href="{{ route('logout') }}" class="menu-item">
             <i class="bi bi-box-arrow-left"></i> Logout
         </a>
@@ -150,6 +161,7 @@
             <div class="profile-bubble"></div>
         </div>
         @yield('content')
+        @stack('scripts')
     </div>
 </body>
 </html>

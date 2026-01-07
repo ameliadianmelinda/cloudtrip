@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\MaskapaiController;
 use App\Http\Controllers\BandaraController;
 use App\Http\Controllers\PesawatController;
+use App\Http\Controllers\JadwalPenerbanganController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -41,6 +42,14 @@ Route::post('/pesawat', [PesawatController::class, 'store'])->name('pesawat.stor
 Route::get('/pesawat/{id}/edit', [PesawatController::class, 'edit'])->name('pesawat.edit');
 Route::put('/pesawat/{id}', [PesawatController::class, 'update'])->name('pesawat.update');
 Route::delete('/pesawat/{id}', [PesawatController::class, 'destroy'])->name('pesawat.destroy');
+
+// Jadwal Penerbangan
+Route::get('/jadwal-penerbangan', [JadwalPenerbanganController::class, 'index'])->name('jadwal_penerbangan');
+Route::get('/jadwal-penerbangan/create', [JadwalPenerbanganController::class, 'create'])->name('jadwal_penerbangan.create');
+Route::post('/jadwal-penerbangan', [JadwalPenerbanganController::class, 'store'])->name('jadwal_penerbangan.store');
+Route::get('/jadwal-penerbangan/{id}/edit', [JadwalPenerbanganController::class, 'edit'])->name('jadwal_penerbangan.edit');
+Route::put('/jadwal-penerbangan/{id}', [JadwalPenerbanganController::class, 'update'])->name('jadwal_penerbangan.update');
+Route::delete('/jadwal-penerbangan/{id}', [JadwalPenerbanganController::class, 'destroy'])->name('jadwal_penerbangan.destroy');
 
 Route::get('/logout', function () {
     Auth::logout();

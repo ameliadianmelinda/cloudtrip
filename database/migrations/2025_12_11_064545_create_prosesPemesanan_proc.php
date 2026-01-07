@@ -10,6 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        DB::unprepared("DROP PROCEDURE IF EXISTS prosesPemesanan");
         DB::unprepared("CREATE DEFINER=`root`@`localhost` PROCEDURE `prosesPemesanan`(IN `u_id` INT, IN `j_id` INT, IN `jml` INT)
 BEGIN
     DECLARE total DECIMAL(12,2);

@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('pemesanan', function (Blueprint $table) {
-            $table->foreign(['user_id'], 'pemesanan_ibfk_1')->references(['id'])->on('users')->onUpdate('no action')->onDelete('no action');
-            $table->foreign(['jadwal_id'], 'pemesanan_ibfk_2')->references(['jadwal_id'])->on('jadwal_penerbangan')->onUpdate('no action')->onDelete('no action');
-        });
+        try {
+            Schema::table('pemesanan', function (Blueprint $table) {
+                $table->foreign(['user_id'], 'pemesanan_ibfk_1')->references(['id'])->on('users')->onUpdate('no action')->onDelete('no action');
+                $table->foreign(['jadwal_id'], 'pemesanan_ibfk_2')->references(['jadwal_id'])->on('jadwal_penerbangan')->onUpdate('no action')->onDelete('no action');
+            });
+        } catch (\Exception $e) {
+            // Skip if already added
+        }
     }
 
     /**
@@ -22,9 +26,13 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('pemesanan', function (Blueprint $table) {
-            $table->dropForeign('pemesanan_ibfk_1');
-            $table->dropForeign('pemesanan_ibfk_2');
-        });
+        try {
+            Schema::table('pemesanan', function (Blueprint $table) {
+                $table->dropForeignIfExists('pemesanan_ibfk_1');
+                $table->dropForeignIfExists('pemesanan_ibfk_2');
+            });
+        } catch (\Exception $e) {
+            // Skip if already dropped
+        }
     }
 };

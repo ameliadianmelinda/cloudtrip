@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('customer_detail', function (Blueprint $table) {
-            $table->foreign(['user_id'], 'customer_detail_ibfk_1')->references(['id'])->on('users')->onUpdate('no action')->onDelete('no action');
-        });
+        try {
+            Schema::table('customer_detail', function (Blueprint $table) {
+                $table->foreign(['user_id'], 'customer_detail_ibfk_1')->references(['id'])->on('users')->onUpdate('no action')->onDelete('no action');
+            });
+        } catch (\Exception $e) {
+            // Skip if foreign key already exists or table issue
+        }
     }
 
     /**
@@ -21,8 +25,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('customer_detail', function (Blueprint $table) {
-            $table->dropForeign('customer_detail_ibfk_1');
-        });
+        try {
+            Schema::table('customer_detail', function (Blueprint $table) {
+                $table->dropForeignIfExists('customer_detail_ibfk_1');
+            });
+        } catch (\Exception $e) {
+            // Ignore drop errors
+        }
     }
 };

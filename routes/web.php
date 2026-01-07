@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\MaskapaiController;
 use App\Http\Controllers\BandaraController;
@@ -20,7 +21,7 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->middleware('guest');
 
 Route::get('/logout', function () {
-    auth()->logout();
+    Auth::logout();
     return redirect('/');
 })->name('logout');
 

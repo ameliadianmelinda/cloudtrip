@@ -1,4 +1,4 @@
-@extends('layout.Header-cust')
+@extends(Auth::check() ? 'layout.Header-cust-auth' : 'layout.Header-cust')
 
 @section('title', 'Homepage - CloudTrip Travel Agency')
 
@@ -106,9 +106,11 @@
 
                         <!-- Search Button -->
                         <div class="flex-shrink-0 flex items-center justify-center" style="margin-top: 24px;">
-                            <button type="submit" class="h-14 w-14 rounded-full transition duration-300 hover:scale-105 hover:shadow-lg transform flex items-center justify-center"
-                                    style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%);">
-                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button type="submit" class="h-14 w-14 rounded-full transition-all duration-300 hover:scale-110 hover:shadow-xl transform flex items-center justify-center hover:shadow-pink-200 hover:bg-opacity-50"
+                                    style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%);"
+                                    onmouseover="this.style.background='linear-gradient(135deg, rgba(255, 184, 148, 0.6) 0%, rgba(251, 149, 144, 0.6) 25%, rgba(220, 88, 109, 0.6) 50%, rgba(163, 55, 87, 0.6) 75%, rgba(76, 29, 61, 0.6) 100%)'"
+                                    onmouseout="this.style.background='linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%)'">
+                                <svg class="w-6 h-6 text-gray-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </button>

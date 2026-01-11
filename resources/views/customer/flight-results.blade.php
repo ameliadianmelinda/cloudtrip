@@ -1,4 +1,4 @@
-@extends('layout.Header-cust')
+@extends(Auth::check() ? 'layout.Header-cust-auth' : 'layout.Header-cust')
 
 @section('title', 'Flight Results - CloudTrip Travel Agency')
 
@@ -35,14 +35,20 @@
 @endpush
 
 @section('content')
-<div class="bg-white w-full min-h-screen">
-    <div class="max-w-6xl mx-auto px-4 py-8">
+<div class="bg-white w-full min-h-screen" style="padding-top: 25px !important;">
+    <div class="max-w-6xl mx-auto px-4 pb-8">
         <!-- Header Section -->
-        <div class="rounded-xl p-6 mb-0 border"
+        <div class="rounded-xl p-6 mb-0 border mt-6"
              style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.2) 0%, rgba(251, 149, 144, 0.2) 25%, rgba(220, 88, 109, 0.2) 50%, rgba(163, 55, 87, 0.2) 75%, rgba(76, 29, 61, 0.2) 100%);
                     border-color: rgba(220, 88, 109, 0.15);">
             <h1 class="text-2xl font-normal text-black">
-                Departures to Bali
+                @if(isset($flights) && $flights->count() > 0)
+                    Penerbangan ke {{ $flights->first()->bandaraTujuan->kota_bandara ?? $flights->first()->bandaraTujuan->nama_bandara ?? 'Tujuan' }}
+                @elseif(isset($destination))
+                    Penerbangan ke {{ $destination }}
+                @else
+                    Hasil Pencarian Penerbangan
+                @endif
             </h1>
         </div>
 
@@ -197,10 +203,12 @@
                     <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
                     </svg>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">No Flights Available</h3>
-                    <p class="text-gray-600">We couldn't find any flights matching your search criteria.</p>
-                    <a href="{{ route('homepage') }}" class="inline-block mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
-                        Search New Flights
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Tidak Ada Penerbangan</h3>
+                    <p class="text-gray-600">Maaf, tidak ada penerbangan yang sesuai dengan kriteria pencarian Anda.</p>
+                    <p class="text-sm text-gray-500 mt-2">Coba ubah tanggal atau rute penerbangan Anda.</p>
+                    <a href="{{ route('homepage') }}" class="inline-block mt-4 px-6 py-3 rounded-lg font-medium transition-colors duration-200"
+                       style="background: linear-gradient(135deg, #FFB894, #FB9590, #DC586D); color: white;">
+                        Cari Penerbangan Baru
                     </a>
                 </div>
             @endforelse

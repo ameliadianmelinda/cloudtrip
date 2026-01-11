@@ -8,13 +8,6 @@
             <small>Selamat datang kembali, Admin!</small>
         </div>
         <div class="header-right">
-            <div class="header-icon">
-                <i class="fas fa-search"></i>
-            </div>
-            <div class="header-icon">
-                <i class="fas fa-bell"></i>
-                <span class="badge-notification">5</span>
-            </div>
             <div class="user-profile">
                 <div class="user-avatar">A</div>
             </div>
@@ -26,11 +19,11 @@
             <div class="stat-icon">
                 <i class="fas fa-ticket-alt"></i>
             </div>
-            <div class="stat-value">1,254</div>
+            <div class="stat-value">{{ $totalPemesanan }}</div>
             <div class="stat-label">Total Pemesanan</div>
             <div class="stat-change up">
                 <i class="fas fa-arrow-up"></i>
-                <span>+12.5% dari bulan lalu</span>
+                <span>{{ $totalPemesanan }} pemesanan terdaftar</span>
             </div>
         </div>
         
@@ -38,11 +31,11 @@
             <div class="stat-icon">
                 <i class="fas fa-users"></i>
             </div>
-            <div class="stat-value">842</div>
+            <div class="stat-value">{{ $totalPenumpang }}</div>
             <div class="stat-label">Total Penumpang</div>
             <div class="stat-change up">
                 <i class="fas fa-arrow-up"></i>
-                <span>+8.3%</span>
+                <span>{{ $totalPenumpang }} penumpang terdaftar</span>
             </div>
         </div>
         
@@ -50,11 +43,11 @@
             <div class="stat-icon">
                 <i class="fas fa-plane"></i>
             </div>
-            <div class="stat-value">156</div>
+            <div class="stat-value">{{ $totalJadwal }}</div>
             <div class="stat-label">Jadwal Penerbangan</div>
-            <div class="stat-change down">
-                <i class="fas fa-arrow-down"></i>
-                <span>-2.1%</span>
+            <div class="stat-change">
+                <i class="fas fa-info-circle"></i>
+                <span>{{ $totalJadwal }} jadwal aktif</span>
             </div>
         </div>
         
@@ -62,11 +55,11 @@
             <div class="stat-icon">
                 <i class="fas fa-dollar-sign"></i>
             </div>
-            <div class="stat-value">Rp 45.2M</div>
+            <div class="stat-value">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</div>
             <div class="stat-label">Total Pendapatan</div>
             <div class="stat-change up">
                 <i class="fas fa-arrow-up"></i>
-                <span>+15.8%</span>
+                <span>Dari pembayaran berhasil</span>
             </div>
         </div>
     </div>
@@ -75,55 +68,30 @@
         <div class="card-section">
             <div class="section-header">
                 <div class="section-title">Pemesanan Terbaru</div>
-                <a href="#" class="view-all">
+                <a href="{{ route('admin.pemesanan.index') }}" class="view-all">
                     Lihat Semua
                     <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
             
+            @forelse($recentPemesanan as $order)
             <div class="project-item">
                 <div class="project-icon" style="background: #e3f2fd; color: #2196f3;">
                     <i class="fas fa-plane-departure"></i>
                 </div>
                 <div class="project-info">
-                    <div class="project-name">Jakarta - Bali</div>
-                    <div class="project-meta">Garuda Indonesia • GA-404 • 15 Des 2025</div>
+                    <div class="project-name">{{ $order->jadwal->bandaraAsal->nama_bandara ?? 'N/A' }} - {{ $order->jadwal->bandaraTujuan->nama_bandara ?? 'N/A' }}</div>
+                    <div class="project-meta">{{ $order->jadwal->maskapai->nama_maskapai ?? 'N/A' }} • {{ $order->kode_pemesanan }} • {{ \Carbon\Carbon::parse($order->jadwal->tanggal_keberangkatan)->format('d M Y') }}</div>
                 </div>
-                <div class="project-amount">Rp 1.2jt</div>
+                <div class="project-amount">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</div>
             </div>
-            
+            @empty
             <div class="project-item">
-                <div class="project-icon" style="background: #f3e5f5; color: #9c27b0;">
-                    <i class="fas fa-plane-arrival"></i>
-                </div>
                 <div class="project-info">
-                    <div class="project-name">Surabaya - Jakarta</div>
-                    <div class="project-meta">Lion Air • JT-720 • 14 Des 2025</div>
+                    <div class="project-name">Belum ada pemesanan</div>
                 </div>
-                <div class="project-amount">Rp 850rb</div>
             </div>
-            
-            <div class="project-item">
-                <div class="project-icon" style="background: #fff3e0; color: #ff9800;">
-                    <i class="fas fa-plane"></i>
-                </div>
-                <div class="project-info">
-                    <div class="project-name">Medan - Batam</div>
-                    <div class="project-meta">Citilink • QG-815 • 14 Des 2025</div>
-                </div>
-                <div class="project-amount">Rp 675rb</div>
-            </div>
-            
-            <div class="project-item">
-                <div class="project-icon" style="background: #e8f5e9; color: #4caf50;">
-                    <i class="fas fa-plane-departure"></i>
-                </div>
-                <div class="project-info">
-                    <div class="project-name">Yogyakarta - Jakarta</div>
-                    <div class="project-meta">AirAsia • QZ-7510 • 13 Des 2025</div>
-                </div>
-                <div class="project-amount">Rp 425rb</div>
-            </div>
+            @endforelse
         </div>
         
         <div class="card-section">
@@ -137,15 +105,15 @@
                 <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
                     <div>
                         <div style="font-size: 12px; color: #999; margin-bottom: 5px;">Sukses</div>
-                        <div style="font-size: 18px; font-weight: 700; color: #27ae60;">1,048</div>
+                        <div style="font-size: 18px; font-weight: 700; color: #27ae60;">{{ $pembayaranSuccess }}</div>
                     </div>
                     <div>
                         <div style="font-size: 12px; color: #999; margin-bottom: 5px;">Pending</div>
-                        <div style="font-size: 18px; font-weight: 700; color: #f39c12;">142</div>
+                        <div style="font-size: 18px; font-weight: 700; color: #f39c12;">{{ $pembayaranPending }}</div>
                     </div>
                     <div>
                         <div style="font-size: 12px; color: #999; margin-bottom: 5px;">Gagal</div>
-                        <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">64</div>
+                        <div style="font-size: 18px; font-weight: 700; color: #e74c3c;">{{ $pembayaranFailed }}</div>
                     </div>
                 </div>
             </div>
@@ -155,7 +123,7 @@
     <div class="card-section">
         <div class="section-header">
             <div class="section-title">Transaksi Terbaru</div>
-            <a href="#" class="view-all">
+            <a href="{{ route('admin.pemesanan.index') }}" class="view-all">
                 Lihat Semua
                 <i class="fas fa-arrow-right"></i>
             </a>
@@ -164,7 +132,7 @@
         <table class="transaction-table">
             <thead>
                 <tr>
-                    <th>ID TRANSAKSI</th>
+                    <th>KODE PEMESANAN</th>
                     <th>PELANGGAN</th>
                     <th>RUTE</th>
                     <th>TANGGAL</th>
@@ -173,46 +141,28 @@
                 </tr>
             </thead>
             <tbody>
+                @forelse($recentPemesanan as $order)
                 <tr>
-                    <td>#TRX-1254</td>
-                    <td>Budi Santoso</td>
-                    <td>CGK - DPS</td>
-                    <td>15 Des 2025</td>
-                    <td style="font-weight: 600;">Rp 1.2jt</td>
-                    <td><span class="status-badge status-success">Sukses</span></td>
+                    <td>{{ $order->kode_pemesanan }}</td>
+                    <td>{{ $order->user->name ?? 'N/A' }}</td>
+                    <td>{{ $order->jadwal->bandaraAsal->kode_bandara ?? 'N/A' }} - {{ $order->jadwal->bandaraTujuan->kode_bandara ?? 'N/A' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($order->tanggal_pesan)->format('d M Y') }}</td>
+                    <td style="font-weight: 600;">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>
+                    <td>
+                        @if($order->status == 'pending')
+                            <span class="status-badge status-pending">Pending</span>
+                        @elseif($order->status == 'paid')
+                            <span class="status-badge status-success">Lunas</span>
+                        @else
+                            <span class="status-badge status-failed">Dibatalkan</span>
+                        @endif
+                    </td>
                 </tr>
+                @empty
                 <tr>
-                    <td>#TRX-1253</td>
-                    <td>Siti Nurhaliza</td>
-                    <td>SUB - CGK</td>
-                    <td>14 Des 2025</td>
-                    <td style="font-weight: 600;">Rp 850rb</td>
-                    <td><span class="status-badge status-pending">Pending</span></td>
+                    <td colspan="6" style="text-align: center; color: #999;">Belum ada transaksi</td>
                 </tr>
-                <tr>
-                    <td>#TRX-1252</td>
-                    <td>Ahmad Dahlan</td>
-                    <td>KNO - BTH</td>
-                    <td>14 Des 2025</td>
-                    <td style="font-weight: 600;">Rp 675rb</td>
-                    <td><span class="status-badge status-success">Sukses</span></td>
-                </tr>
-                <tr>
-                    <td>#TRX-1251</td>
-                    <td>Dewi Lestari</td>
-                    <td>JOG - CGK</td>
-                    <td>13 Des 2025</td>
-                    <td style="font-weight: 600;">Rp 425rb</td>
-                    <td><span class="status-badge status-failed">Gagal</span></td>
-                </tr>
-                <tr>
-                    <td>#TRX-1250</td>
-                    <td>Joko Widodo</td>
-                    <td>CGK - UPG</td>
-                    <td>13 Des 2025</td>
-                    <td style="font-weight: 600;">Rp 950rb</td>
-                    <td><span class="status-badge status-success">Sukses</span></td>
-                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -227,7 +177,7 @@ new Chart(ctx, {
     data: {
         labels: ['Sukses', 'Pending', 'Gagal'],
         datasets: [{
-            data: [1048, 142, 64],
+            data: [{{ $pembayaranSuccess }}, {{ $pembayaranPending }}, {{ $pembayaranFailed }}],
             backgroundColor: [
                 'rgba(39, 174, 96, 0.8)',
                 'rgba(243, 156, 18, 0.8)',

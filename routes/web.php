@@ -13,6 +13,8 @@ use App\Http\Controllers\PemesananController;
 
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');
+Route::get('/flight/{id}/detail', [HomepageController::class, 'flightDetail'])->name('flight.detail');
+Route::get('/flight/{id}/booking', [HomepageController::class, 'flightBooking'])->name('flight.booking');
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');

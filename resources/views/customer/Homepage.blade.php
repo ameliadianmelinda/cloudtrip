@@ -22,7 +22,19 @@
             </div>
 
             <!-- Flight Search Form -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-lg p-6 max-w-4xl mx-auto relative z-40">
+
+                <!-- Display validation errors -->
+                @if($errors->any())
+                    <div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded mb-4">
+                        <ul class="list-disc list-inside">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{ route('search.flights') }}" method="POST" id="flightSearchForm">
                     @csrf
                     <input type="hidden" name="trip_type" id="tripType" value="one_way">
@@ -37,11 +49,11 @@
                         <!-- From -->
                         <div class="flex-1">
                             <label class="block text-sm text-gray-600 mb-1">From</label>
-                            <div class="relative">
-                                <select name="from" class="w-full p-3 pr-12 pl-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white" required>
+                            <div class="relative z-50">
+                                <select name="from" class="w-full p-3 pr-12 pl-4 border @error('from') border-red-500 @else border-gray-300 @enderror rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white" required>
                                     <option value="">Select departure city</option>
                                     @foreach($bandaras as $bandara)
-                                        <option value="{{ $bandara->nama_bandara }}">{{ $bandara->nama_bandara }}, {{ $bandara->negara }}</option>
+                                        <option value="{{ $bandara->nama_bandara }}" {{ old('from') == $bandara->nama_bandara ? 'selected' : '' }}>{{ $bandara->nama_bandara }}, {{ $bandara->negara }}</option>
                                     @endforeach
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
@@ -65,11 +77,11 @@
                         <!-- To -->
                         <div class="flex-1">
                             <label class="block text-sm text-gray-600 mb-1">To</label>
-                            <div class="relative">
-                                <select name="to" class="w-full p-3 pr-12 pl-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white" required>
+                            <div class="relative z-50">
+                                <select name="to" class="w-full p-3 pr-12 pl-4 border @error('to') border-red-500 @else border-gray-300 @enderror rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white" required>
                                     <option value="">Select destination city</option>
                                     @foreach($bandaras as $bandara)
-                                        <option value="{{ $bandara->nama_bandara }}">{{ $bandara->nama_bandara }}, {{ $bandara->negara }}</option>
+                                        <option value="{{ $bandara->nama_bandara }}" {{ old('to') == $bandara->nama_bandara ? 'selected' : '' }}>{{ $bandara->nama_bandara }}, {{ $bandara->negara }}</option>
                                     @endforeach
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
@@ -83,13 +95,13 @@
                         <!-- Departure -->
                         <div class="flex-1">
                             <label class="block text-sm text-gray-600 mb-1">Departure</label>
-                            <input type="date" name="departure_date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" min="{{ date('Y-m-d') }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                            <input type="date" name="departure_date" value="{{ old('departure_date', date('Y-m-d', strtotime('+1 day'))) }}" min="{{ date('Y-m-d') }}" max="{{ date('Y-m-d', strtotime('+2 years')) }}" class="w-full p-3 border @error('departure_date') border-red-500 @else border-gray-300 @enderror rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
                         </div>
 
                         <!-- Return -->
                         <div id="returnDateField" class="flex-1 hidden">
                             <label class="block text-sm text-gray-600 mb-1">Return</label>
-                            <input type="date" name="return_date" value="{{ date('Y-m-d', strtotime('+7 days')) }}" min="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <input type="date" name="return_date" value="{{ date('Y-m-d', strtotime('+7 days')) }}" min="{{ date('Y-m-d', strtotime('+1 day')) }}" max="{{ date('Y-m-d', strtotime('+2 years')) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
 
                         <!-- Search Button -->
@@ -315,6 +327,24 @@
     const swapBtn = document.getElementById('swapBtn');
     const fromSelect = document.querySelector('select[name="from"]');
     const toSelect = document.querySelector('select[name="to"]');
+    const departureDateInput = document.querySelector('input[name="departure_date"]');
+    const returnDateInput = document.querySelector('input[name="return_date"]');
+
+    // Function to update return date minimum based on departure date
+    function updateReturnDateMin() {
+        if (departureDateInput.value) {
+            const departureDate = new Date(departureDateInput.value);
+            const nextDay = new Date(departureDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const minReturnDate = nextDay.toISOString().split('T')[0];
+            returnDateInput.setAttribute('min', minReturnDate);
+
+            // If current return date is before new minimum, update it
+            if (returnDateInput.value && returnDateInput.value <= departureDateInput.value) {
+                returnDateInput.value = minReturnDate;
+            }
+        }
+    }
 
     // Function to handle One Way selection
     function selectOneWay() {
@@ -361,8 +391,12 @@
     oneWayBtn.addEventListener('click', selectOneWay);
     roundTripBtn.addEventListener('click', selectRoundTrip);
     swapBtn.addEventListener('click', swapDestinations);
+    departureDateInput.addEventListener('change', updateReturnDateMin);
 
     // Initialize with One Way selected (return field hidden)
     selectOneWay();
+
+    // Initialize return date minimum
+    updateReturnDateMin();
 </script>
 @endpush

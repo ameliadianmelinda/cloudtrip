@@ -11,7 +11,7 @@
 </head>
 <body class="bg-gray-50 font-inter">
     <!-- Header Navigation -->
-    <header class="bg-white shadow-sm">
+    <header class="bg-white shadow-sm sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
@@ -30,7 +30,7 @@
                         <!-- Notification badge -->
                         <span class="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
                     </button>
-                    
+
                     <!-- User Profile Dropdown -->
                     <div class="relative">
                         <button class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition duration-200">
@@ -40,7 +40,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
-                        
+
                         <!-- Dropdown Menu (Hidden by default, can be toggled with JavaScript) -->
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border py-1 hidden" id="userDropdown">
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Profile</a>

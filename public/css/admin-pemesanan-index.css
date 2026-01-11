@@ -12,8 +12,7 @@ body {
 .main-content {
     padding: 20px 40px;
     max-width: 1400px;
-    /* keep space for fixed sidebar */
-    margin-left: 260px;
+    margin: 0 auto;
 }
 
 .top-header {
@@ -97,10 +96,9 @@ body {
 }
 
 .stat-card.gradient {
-    background: white;
-    color: #2c3e50;
-    border: 1px solid #f0f0f0;
-} 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
 
 .stat-icon {
     width: 55px;
@@ -173,10 +171,9 @@ body {
 }
 
 .filter-tab.active {
-    background: #e9ecef;
-    color: #2c3e50;
-    box-shadow: none;
-} 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
 
 .orders-table {
     display: flex;
@@ -385,20 +382,20 @@ body {
 }
 
 .btn-detail {
-    background: #6c757d; /* bootstrap secondary */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 10px 24px;
+    border-radius: 10px;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.3s;
     text-decoration: none;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 8px;
-} 
+}
 
 .btn-detail:hover {
     transform: translateY(-2px);
@@ -433,7 +430,6 @@ body {
 @media (max-width: 768px) {
     .main-content {
         padding: 15px;
-        margin-left: 0; /* remove sidebar margin on small screens */
     }
     
     .top-header {

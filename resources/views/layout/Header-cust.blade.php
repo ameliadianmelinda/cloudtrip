@@ -11,7 +11,7 @@
 </head>
 <body class="bg-gray-50 font-inter">
     <!-- Header Navigation -->
-    <header class="bg-white shadow-sm">
+    <header class="bg-white shadow-sm" style="position: sticky !important; top: 0 !important; z-index: 30 !important;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->

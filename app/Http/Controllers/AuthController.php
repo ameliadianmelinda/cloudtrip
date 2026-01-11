@@ -26,7 +26,13 @@ class AuthController extends Controller
             $request->session()->regenerate();
             Log::info('Login successful', ['email' => $request->input('email')]);
 
-            return redirect()->intended(route('homepage'));
+            // Redirect berdasarkan role
+            $user = Auth::user();
+            if ($user->role === 'admin' || $user->role === 'staff') {
+                return redirect()->route('dashboard');
+            }
+
+            return redirect()->route('homepage');
         }
 
         Log::warning('Login failed', ['email' => $request->input('email')]);
@@ -55,10 +61,9 @@ class AuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'role' => 'customer',
         ]);
 
-        Auth::login($user);
-
-        return redirect()->route('homepage');
+        return redirect()->route('login')->with('success', 'Akun berhasil dibuat. Silakan login dengan email dan password Anda.');
     }
 }

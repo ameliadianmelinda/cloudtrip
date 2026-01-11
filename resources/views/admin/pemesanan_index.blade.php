@@ -1,26 +1,16 @@
 @extends('layout.admin')
 
+<link href="{{ asset('css/admin-pemesanan-index.css') }}" rel="stylesheet">
 @section('content')
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Pemesanan - CloudTrip Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ asset('css/admin-pemesanan-index.css') }}" rel="stylesheet">
-</head>
-<body>
-<div class="main-content">
+    {{-- HEADER --}}
     <div class="top-header">
-        <div class="header-title">
+        <div class="header-left">
             <h4>Manajemen Pemesanan</h4>
             <small>Kelola semua pemesanan tiket pesawat</small>
         </div>
-        <div class="header-actions">
+
+        <div class="header-right">
             <div class="search-box">
                 <input type="text" placeholder="Cari kode pemesanan..." id="searchInput">
                 <i class="fas fa-search"></i>
@@ -35,37 +25,54 @@
     </div>
     @endif
 
-    <div class="stats-cards">
+    {{-- STAT CARDS --}}
+    <div class="stats-grid">
         <div class="stat-card gradient">
             <div class="stat-icon">
                 <i class="fas fa-ticket-alt"></i>
             </div>
             <div class="stat-value">{{ $pemesanan->total() }}</div>
             <div class="stat-label">Total Pemesanan</div>
+            <div class="stat-change up">
+                <i class="fas fa-arrow-up"></i>
+                <span>{{ $pemesanan->total() }} pemesanan terdaftar</span>
+            </div>
         </div>
         
         <div class="stat-card">
-            <div class="stat-icon pending-icon">
+            <div class="stat-icon">
                 <i class="fas fa-clock"></i>
             </div>
             <div class="stat-value">{{ $pemesanan->where('status', 'pending')->count() }}</div>
             <div class="stat-label">Pending</div>
+            <div class="stat-change">
+                <i class="fas fa-info-circle"></i>
+                <span>Menunggu pembayaran</span>
+            </div>
         </div>
         
         <div class="stat-card">
-            <div class="stat-icon success-icon">
+            <div class="stat-icon">
                 <i class="fas fa-check-circle"></i>
             </div>
             <div class="stat-value">{{ $pemesanan->where('status', 'paid')->count() }}</div>
             <div class="stat-label">Lunas</div>
+            <div class="stat-change up">
+                <i class="fas fa-arrow-up"></i>
+                <span>Pembayaran berhasil</span>
+            </div>
         </div>
         
         <div class="stat-card">
-            <div class="stat-icon cancel-icon">
+            <div class="stat-icon">
                 <i class="fas fa-times-circle"></i>
             </div>
             <div class="stat-value">{{ $pemesanan->where('status', 'cancel')->count() }}</div>
             <div class="stat-label">Dibatalkan</div>
+            <div class="stat-change">
+                <i class="fas fa-info-circle"></i>
+                <span>Pemesanan dibatalkan</span>
+            </div>
         </div>
     </div>
 
@@ -193,13 +200,6 @@
         @endforelse
     </div>
     
-    @if($pemesanan->hasPages())
-    <div class="pagination-wrapper">
-        {{ $pemesanan->links() }}
-    </div>
-    @endif
-</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script>
 document.getElementById('searchInput').addEventListener('keyup', function(e) {
@@ -234,7 +234,5 @@ function filterOrders(status) {
     });
 }
 </script>
-</body>
-</html>
 
 @endsection

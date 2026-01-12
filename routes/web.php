@@ -31,14 +31,14 @@ Route::get('/logout', function () {
 // Admin Dashboard & Management (admin only)
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    
+
     Route::get('/maskapai', [MaskapaiController::class, 'index'])->name('maskapai');
     Route::get('/maskapai/create', [MaskapaiController::class, 'create'])->name('maskapai.create');
     Route::post('/maskapai', [MaskapaiController::class, 'store'])->name('maskapai.store');
     Route::get('/maskapai/{id}/edit', [MaskapaiController::class, 'edit'])->name('maskapai.edit');
     Route::put('/maskapai/{id}', [MaskapaiController::class, 'update'])->name('maskapai.update');
     Route::delete('/maskapai/{id}', [MaskapaiController::class, 'destroy'])->name('maskapai.destroy');
-    
+
     Route::get('/bandara', [BandaraController::class, 'index'])->name('bandara');
     Route::get('/bandara/create', [BandaraController::class, 'create'])->name('bandara.create');
     Route::post('/bandara', [BandaraController::class, 'store'])->name('bandara.store');
@@ -67,6 +67,13 @@ Route::delete('/pesawat/{id}', [PesawatController::class, 'destroy'])->name('pes
     Route::get('/admin/pemesanan', [PemesananController::class, 'index'])->name('admin.pemesanan.index');
     Route::get('/admin/pemesanan/{id}', [PemesananController::class, 'show'])->name('admin.pemesanan.show');
     Route::put('/admin/pemesanan/{id}', [PemesananController::class, 'updateStatus'])->name('admin.pemesanan.updateStatus');
+});
+
+// Pemesanan (customer)
+Route::middleware('auth')->group(function () {
+    Route::post('/booking', [PemesananController::class, 'store'])->name('booking.store');
+    Route::get('/payment/{pemesanan}', [PemesananController::class, 'payment'])->name('payment.show');
+    Route::post('/payment/store', [PemesananController::class, 'storePayment'])->name('payment.store');
 });
 
 // Health check route for debugging

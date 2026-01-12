@@ -24,23 +24,6 @@ class JadwalPenerbanganController extends Controller
 
     public function store(Request $request)
     {
-        // Normalisasi format waktu jika user mengirimkan format 12-jam (contoh: "03:05 AM")
-        if ($request->filled('waktu_berangkat')) {
-            try {
-                $t = \Carbon\Carbon::createFromFormat('h:i A', $request->input('waktu_berangkat'));
-                $request->merge(['waktu_berangkat' => $t->format('H:i')]);
-            } catch (\Exception $e) {
-                // jika gagal, biarkan Laravel validasi menangani nilai apa adanya
-            }
-        }
-        if ($request->filled('waktu_tiba')) {
-            try {
-                $t2 = \Carbon\Carbon::createFromFormat('h:i A', $request->input('waktu_tiba'));
-                $request->merge(['waktu_tiba' => $t2->format('H:i')]);
-            } catch (\Exception $e) {
-            }
-        }
-
         $validated = $request->validate([
             'pesawat_id' => 'required|integer|exists:pesawat,pesawat_id',
             'bandara_asal' => 'required|integer|exists:bandara,bandara_id',
@@ -67,21 +50,6 @@ class JadwalPenerbanganController extends Controller
     public function update(Request $request, $id)
     {
         $jadwal = JadwalPenerbangan::findOrFail($id);
-        // Normalisasi input waktu 12-jam -> 24-jam sebelum validasi
-        if ($request->filled('waktu_berangkat')) {
-            try {
-                $t = \Carbon\Carbon::createFromFormat('h:i A', $request->input('waktu_berangkat'));
-                $request->merge(['waktu_berangkat' => $t->format('H:i')]);
-            } catch (\Exception $e) {
-            }
-        }
-        if ($request->filled('waktu_tiba')) {
-            try {
-                $t2 = \Carbon\Carbon::createFromFormat('h:i A', $request->input('waktu_tiba'));
-                $request->merge(['waktu_tiba' => $t2->format('H:i')]);
-            } catch (\Exception $e) {
-            }
-        }
         $validated = $request->validate([
             'pesawat_id' => 'required|integer|exists:pesawat,pesawat_id',
             'bandara_asal' => 'required|integer|exists:bandara,bandara_id',

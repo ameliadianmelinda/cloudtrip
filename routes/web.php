@@ -10,6 +10,8 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PemesananController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\JadwalPenerbanganController;
 
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');
@@ -49,6 +51,18 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/pesawat/{id}/edit', [PesawatController::class, 'edit'])->name('pesawat.edit');
     Route::put('/pesawat/{id}', [PesawatController::class, 'update'])->name('pesawat.update');
     Route::delete('/pesawat/{id}', [PesawatController::class, 'destroy'])->name('pesawat.destroy');
+
+    // Jadwal Penerbangan (admin)
+    Route::get('/jadwal_penerbangan', [JadwalPenerbanganController::class, 'index'])->name('jadwal_penerbangan');
+    Route::get('/jadwal_penerbangan/create', [JadwalPenerbanganController::class, 'create'])->name('jadwal_penerbangan.create');
+    Route::post('/jadwal_penerbangan', [JadwalPenerbanganController::class, 'store'])->name('jadwal_penerbangan.store');
+    Route::get('/jadwal_penerbangan/{id}/edit', [JadwalPenerbanganController::class, 'edit'])->name('jadwal_penerbangan.edit');
+    Route::put('/jadwal_penerbangan/{id}', [JadwalPenerbanganController::class, 'update'])->name('jadwal_penerbangan.update');
+    Route::delete('/jadwal_penerbangan/{id}', [JadwalPenerbanganController::class, 'destroy'])->name('jadwal_penerbangan.destroy');
+
+    // Laporan
+    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan');
+    Route::get('/laporan/print', [ReportController::class, 'print'])->name('laporan.print');
 
     // User management (admin only)
     Route::middleware('admin_only')->group(function () {

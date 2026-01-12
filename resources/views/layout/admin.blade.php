@@ -191,12 +191,12 @@
             <a href="{{ route('users') }}" class="menu-item {{ request()->is('users*') ? 'menu-active' : '' }}">
                 <i class="bi bi-people"></i> Users
             </a> 
-            <a href="#" class="menu-item {{ request()->is('#') ? 'menu-active' : '' }}">
+            <a href="{{ route('jadwal_penerbangan') }}" class="menu-item {{ request()->is('jadwal_penerbangan*') ? 'menu-active' : '' }}">
                 <i class="bi bi-calendar3"></i> Jadwal Penerbangan
-            </a>    
-            <a href="#" class="menu-item {{ request()->is('#') ? 'menu-active' : '' }}">
+            </a>
+            <a href="{{ route('laporan') }}" class="menu-item {{ request()->is('laporan*') ? 'menu-active' : '' }}">
                 <i class="bi bi-file-earmark-text"></i> Laporan
-            </a> 
+            </a>
             <a href="{{ route('logout') }}" class="menu-item">
                 <i class="bi bi-box-arrow-left"></i> Logout
             </a>

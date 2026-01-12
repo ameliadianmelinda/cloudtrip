@@ -64,6 +64,8 @@
     $logoPath = $flight->pesawat && $flight->pesawat->maskapai
         ? $flight->pesawat->maskapai->logo
         : null;
+
+    $totalPrice = $flight->harga * $passengers;
 @endphp
 
 <div class="bg-gray-50 min-h-screen py-8 mt-6" style="margin-top: 24px;">
@@ -92,9 +94,13 @@
                             @endif
                         </div>
 
-                    <form class="space-y-8" method="POST" action="{{ route('booking.store') }}">
+                    <form class="space-y-8" method="POST" action="{{ route('booking.store') }}" novalidate>
                         @csrf
                         <input type="hidden" name="flight_id" value="{{ $flight->jadwal_id }}">
+                        <input type="hidden" name="total_passengers" value="{{ $passengers }}">
+                        
+                        <!-- Debug: Jumlah penumpang = {{ $passengers }} -->
+                        
                         <!-- Error Messages Container -->
                         <div id="errorContainer" class="hidden" style="background: #fee; border: 1px solid #fee; border-left: 4px solid #e74c3c; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 14px; color: #e74c3c;">
                             <div class="flex items-center">
@@ -103,88 +109,105 @@
                             </div>
                         </div>
 
-                        <!-- Nama Penumpang -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-0.5">
-                                Nama Penumpang<span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">Sesuai KTP/Passport/SIM (tanpa gelar atau karakter khusus)</p>
-                            <input type="text" name="nama_penumpang"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors mb-4"
-                                   placeholder="Masukkan nama lengkap penumpang"
-                                   required>
-                        </div>
+                        @for($p = 1; $p <= $passengers; $p++)
+                        <!-- Data Penumpang {{ $p }} -->
+                        <div style="{{ $p > 1 ? 'margin-top: 32px;' : '' }}">
+                            <h3 class="text-base font-semibold text-gray-900 mb-6">Data Penumpang {{ $p }}</h3>
+                            
+                            <!-- Nama Penumpang -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-0.5">
+                                    Nama Penumpang<span class="text-red-500 ml-1">*</span>
+                                </label>
+                                <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">Sesuai KTP/Passport/SIM (tanpa gelar atau karakter khusus)</p>
+                                <input type="text" name="nama_penumpang[]"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors mb-4"
+                                       placeholder="Masukkan nama lengkap penumpang"
+                                       title="Nama penumpang wajib diisi"
+                                       required>
+                            </div>
 
-                        <!-- NIK -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-0.5">
-                                NIK (Nomor Induk Kependudukan)<span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">16 digit nomor KTP</p>
-                            <input type="text" name="nik" maxlength="16"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors mb-4"
-                                   placeholder="Masukkan Nomor Induk Kependudukan"
-                                   required>
-                        </div>
+                            <!-- NIK -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-0.5">
+                                    NIK (Nomor Induk Kependudukan)<span class="text-red-500 ml-1">*</span>
+                                </label>
+                                <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">16 digit nomor KTP</p>
+                                <input type="text" name="nik[]" maxlength="16" minlength="16" pattern="[0-9]{16}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors mb-4"
+                                       placeholder="Masukkan Nomor Induk Kependudukan"
+                                       title="NIK harus 16 digit angka"
+                                       required>
+                            </div>
 
-                        <!-- Tanggal Lahir -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-0.5">
-                                Tanggal Lahir<span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">Penumpang Dewasa (Usia 12 tahun ke atas)</p>
-                            <div class="flex gap-3 mb-4">
-                                <div class="flex-1">
-                                    <select name="birth_day"
-                                            class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" required>
-                                        <option value="">DD</option>
-                                        @for($i = 1; $i <= 31; $i++)
-                                            <option value="{{ sprintf('%02d', $i) }}">{{ sprintf('%02d', $i) }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-                                <div class="flex-2">
-                                    <select name="birth_month"
-                                            class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" required>
-                                        <option value="">MMMM</option>
-                                        <option value="01">January</option>
-                                        <option value="02">February</option>
-                                        <option value="03">March</option>
-                                        <option value="04">April</option>
-                                        <option value="05">May</option>
-                                        <option value="06">June</option>
-                                        <option value="07">July</option>
-                                        <option value="08">August</option>
-                                        <option value="09">September</option>
-                                        <option value="10">October</option>
-                                        <option value="11">November</option>
-                                        <option value="12">December</option>
-                                    </select>
-                                </div>
-                                <div class="flex-1">
-                                    <select name="birth_year"
-                                            class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" required>
-                                        <option value="">YYYY</option>
-                                        @for($year = 2024; $year >= 1930; $year--)
-                                            <option value="{{ $year }}">{{ $year }}</option>
-                                        @endfor
-                                    </select>
+                            <!-- Tanggal Lahir -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-0.5">
+                                    Tanggal Lahir<span class="text-red-500 ml-1">*</span>
+                                </label>
+                                <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">Penumpang Dewasa (Usia 12 tahun ke atas)</p>
+                                <div class="flex gap-3 mb-4">
+                                    <div class="flex-1">
+                                        <select name="birth_day[]"
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                title="Pilih tanggal lahir"
+                                                required>
+                                            <option value="">DD</option>
+                                            @for($i = 1; $i <= 31; $i++)
+                                                <option value="{{ sprintf('%02d', $i) }}">{{ sprintf('%02d', $i) }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                    <div class="flex-2">
+                                        <select name="birth_month[]"
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                title="Pilih bulan lahir"
+                                                required>
+                                            <option value="">MMMM</option>
+                                            <option value="01">January</option>
+                                            <option value="02">February</option>
+                                            <option value="03">March</option>
+                                            <option value="04">April</option>
+                                            <option value="05">May</option>
+                                            <option value="06">June</option>
+                                            <option value="07">July</option>
+                                            <option value="08">August</option>
+                                            <option value="09">September</option>
+                                            <option value="10">October</option>
+                                            <option value="11">November</option>
+                                            <option value="12">December</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex-1">
+                                        <select name="birth_year[]"
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                title="Pilih tahun lahir"
+                                                required>
+                                            <option value="">YYYY</option>
+                                            @for($year = 2024; $year >= 1930; $year--)
+                                                <option value="{{ $year }}">{{ $year }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Jenis Kelamin -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-3">
-                                Jenis Kelamin<span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <select name="jenis_kelamin"
-                                    class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600 mb-4" required>
-                                <option value="">Pilih jenis kelamin</option>
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
-                            </select>
+                            <!-- Jenis Kelamin -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Jenis Kelamin<span class="text-red-500 ml-1">*</span>
+                                </label>
+                                <select name="jenis_kelamin[]"
+                                        class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600 mb-4" 
+                                        title="Pilih jenis kelamin"
+                                        required>
+                                    <option value="">Pilih jenis kelamin</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
                         </div>
+                        @endfor
 
                         <!-- Submit Button -->
                         <div class="flex justify-end pt-8">
@@ -349,7 +372,10 @@
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-700">Harga yang dibayar</span>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xl font-bold text-orange-600">Rp {{ number_format($flight->harga, 0, ',', '.') }}</span>
+                                    <div class="text-right">
+                                        <div class="text-xl font-bold text-orange-600">Rp {{ number_format($totalPrice, 0, ',', '.') }}</div>
+                                        <div class="text-xs text-gray-500">(Rp {{ number_format($flight->harga, 0, ',', '.') }} x {{ $passengers }} penumpang)</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -363,3 +389,80 @@
 
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const errorContainer = document.getElementById('errorContainer');
+    const errorList = document.getElementById('errorList');
+    
+    form.addEventListener('submit', function(e) {
+        // Reset error container
+        errorContainer.classList.add('hidden');
+        errorList.innerHTML = '';
+        
+        // Collect all required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        let hasEmptyFields = false;
+        let hasInvalidNIK = false;
+        let firstErrorField = null;
+        
+        requiredFields.forEach(function(field) {
+            // Check if field is empty
+            if (!field.value || field.value === '') {
+                hasEmptyFields = true;
+                if (!firstErrorField) {
+                    firstErrorField = field;
+                }
+            }
+            
+            // Validasi khusus untuk NIK
+            if (field.name === 'nik[]' && field.value) {
+                if (field.value.length !== 16 || !/^\d+$/.test(field.value)) {
+                    hasInvalidNIK = true;
+                    if (!firstErrorField) {
+                        firstErrorField = field;
+                    }
+                }
+            }
+        });
+        
+        let errors = [];
+        
+        // Tambahkan pesan error
+        if (hasEmptyFields) {
+            errors.push('Data harus diisi dengan lengkap!');
+        }
+        
+        if (hasInvalidNIK) {
+            errors.push('NIK harus terdiri dari 16 digit angka');
+        }
+        
+        // If there are errors
+        if (errors.length > 0) {
+            e.preventDefault();
+            
+            // Show error container
+            errorContainer.classList.remove('hidden');
+            
+            // Display errors
+            errorList.innerHTML = errors.join('<br>');
+            
+            // Scroll to top
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
+            // Focus on first error field
+            if (firstErrorField) {
+                setTimeout(function() {
+                    firstErrorField.focus();
+                }, 300);
+            }
+        }
+    });
+});
+</script>
+@endpush

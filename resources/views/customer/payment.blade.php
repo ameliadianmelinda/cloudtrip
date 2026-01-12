@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 stickySidebar.style.left = originalLeft + 'px';
                 stickySidebar.style.width = originalWidth + 'px';
                 stickySidebar.style.zIndex = '20';
-            } else {
+            } else {    
                 // Normal mode
                 stickySidebar.style.position = 'relative';
                 stickySidebar.style.left = 'auto';

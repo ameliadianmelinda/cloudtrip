@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pemesanan;
+use App\Models\Transaksi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -121,7 +122,7 @@ class PemesananController extends Controller
         try {
             $validated = $request->validate([
                 'pemesanan_id' => 'required|exists:pemesanan,pemesanan_id',
-                'metode' => 'required|in:transfer,qris,va',
+                'metode' => 'required|in:transfer,qris,va,bca,mandiri,bri,bni',
                 'jumlah' => 'required|numeric|min:0',
                 'status' => 'required|in:success,failed,pending',
             ]);
@@ -139,10 +140,23 @@ class PemesananController extends Controller
                 'tanggal_bayar' => now(),
             ]);
 
+            // Simpan data transaksi
+            $transaksi = Transaksi::create([
+                'pemesanan_id' => $pemesanan->pemesanan_id,
+                'pembayaran_id' => $pembayaran->id,
+                'jumlah' => $validated['jumlah'],
+                'metode' => $validated['metode'],
+                'status' => 'paid',
+                'tanggal_transaksi' => now(),
+            ]);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Pembayaran berhasil disimpan',
-                'data' => $pembayaran
+                'message' => 'Pembayaran & transaksi berhasil disimpan',
+                'data' => [
+                    'pembayaran' => $pembayaran,
+                    'transaksi' => $transaksi
+                ]
             ]);
         } catch (\Exception $e) {
             Log::error('Payment store error: ' . $e->getMessage());

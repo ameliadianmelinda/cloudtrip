@@ -7,11 +7,6 @@
             <h4>Dashboard</h4>
             <small>Selamat datang kembali, Admin!</small>
         </div>
-        <div class="header-right">
-            <div class="user-profile">
-                <div class="user-avatar">A</div>
-            </div>
-        </div>
     </div>
     
     <div class="stats-grid">

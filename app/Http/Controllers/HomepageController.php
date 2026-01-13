@@ -28,7 +28,8 @@ class HomepageController extends Controller
             'to' => 'required|different:from',
             'departure_date' => 'required|date|after_or_equal:today',
             'return_date' => 'nullable|date|after:departure_date',
-            'trip_type' => 'required|in:one_way,round_trip'
+            'trip_type' => 'required|in:one_way,round_trip',
+            'passengers' => 'nullable|integer|min:1|max:9'
         ], [
             'from.required' => 'Please select a departure city',
             'from.different' => 'Departure and destination cities must be different',
@@ -41,6 +42,7 @@ class HomepageController extends Controller
 
         // Store trip type in session
         session(['trip_type' => $request->trip_type]);
+        session(['passengers' => $request->passengers ?? 1]);
 
         // Get Bandara IDs
         $bandaraAsal = Bandara::where('nama_bandara', $request->from)->first();
@@ -90,6 +92,15 @@ class HomepageController extends Controller
         $flight = JadwalPenerbangan::with(['pesawat.maskapai', 'bandaraAsal', 'bandaraTujuan'])
             ->findOrFail($id);
 
-        return view('customer.flight-booking', compact('flight'));
+        // Ambil jumlah penumpang dari query atau session, minimal 1
+        $passengers = request()->integer('passengers', session('passengers', 1));
+        $passengers = $passengers > 0 ? $passengers : 1;
+
+        // Simpan kembali ke session agar konsisten di langkah berikutnya
+        session(['passengers' => $passengers]);
+
+        \Log::info('Passengers count: ' . $passengers);
+
+        return view('customer.flight-booking', compact('flight', 'passengers'));
     }
 }

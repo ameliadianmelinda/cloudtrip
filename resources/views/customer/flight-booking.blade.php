@@ -1,4 +1,4 @@
-@extends('layout.Header-cust')
+@extends(Auth::check() ? 'layout.Header-cust-auth' : 'layout.Header-cust')
 
 @section('title', 'Booking Flight - CloudTrip Travel Agency')
 
@@ -64,6 +64,8 @@
     $logoPath = $flight->pesawat && $flight->pesawat->maskapai
         ? $flight->pesawat->maskapai->logo
         : null;
+
+    $totalPrice = $flight->harga * $passengers;
 @endphp
 
 <div class="bg-gray-50 min-h-screen py-8 mt-6" style="margin-top: 24px;">
@@ -85,93 +87,142 @@
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                                 </svg>
                             </div>
-                            <span class="text-gray-700 font-medium">Masuk sebagai Amelia Dian Melinda</span>
+                            @if(Auth::check())
+                                <span class="text-gray-700 font-medium">Masuk sebagai {{ Auth::user()->email }}</span>
+                            @else
+                                <span class="text-gray-700 font-medium">Anda blm login? <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-800 underline">Login disini!</a></span>
+                            @endif
                         </div>
 
-                    <form class="space-y-8">
-                        <!-- Nama Penumpang -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-0.5">
-                                Nama Penumpang<span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">Sesuai KTP/Passport/SIM (tanpa gelar atau karakter khusus)</p>
-                            <input type="text" name="nama_penumpang"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors mb-4"
-                                   placeholder="Masukkan nama lengkap penumpang"
-                                   required>
-                        </div>
-
-                        <!-- NIK -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-0.5">
-                                NIK (Nomor Induk Kependudukan)<span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">16 digit nomor KTP</p>
-                            <input type="text" name="nik" maxlength="16"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors mb-4"
-                                   placeholder="Masukkan Nomor Induk Kependudukan"
-                                   required>
-                        </div>
-
-                        <!-- Tanggal Lahir -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-0.5">
-                                Tanggal Lahir<span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">Penumpang Dewasa (Usia 12 tahun ke atas)</p>
-                            <div class="flex gap-3 mb-4">
-                                <div class="flex-1">
-                                    <select name="birth_day"
-                                            class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" required>
-                                        <option value="">DD</option>
-                                        @for($i = 1; $i <= 31; $i++)
-                                            <option value="{{ sprintf('%02d', $i) }}">{{ sprintf('%02d', $i) }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
-                                <div class="flex-2">
-                                    <select name="birth_month"
-                                            class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" required>
-                                        <option value="">MMMM</option>
-                                        <option value="01">January</option>
-                                        <option value="02">February</option>
-                                        <option value="03">March</option>
-                                        <option value="04">April</option>
-                                        <option value="05">May</option>
-                                        <option value="06">June</option>
-                                        <option value="07">July</option>
-                                        <option value="08">August</option>
-                                        <option value="09">September</option>
-                                        <option value="10">October</option>
-                                        <option value="11">November</option>
-                                        <option value="12">December</option>
-                                    </select>
-                                </div>
-                                <div class="flex-1">
-                                    <select name="birth_year"
-                                            class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" required>
-                                        <option value="">YYYY</option>
-                                        @for($year = 2024; $year >= 1930; $year--)
-                                            <option value="{{ $year }}">{{ $year }}</option>
-                                        @endfor
-                                    </select>
-                                </div>
+                    <form class="space-y-8" method="POST" action="{{ route('booking.store') }}" novalidate>
+                        @csrf
+                        <input type="hidden" name="flight_id" value="{{ $flight->jadwal_id }}">
+                        <input type="hidden" name="total_passengers" value="{{ $passengers }}">
+                        
+                        <!-- Debug: Jumlah penumpang = {{ $passengers }} -->
+                        
+                        <!-- Error Messages Container -->
+                        <div id="errorContainer" class="hidden" style="background: #fee; border: 1px solid #fee; border-left: 4px solid #e74c3c; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 14px; color: #e74c3c;">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle" style="margin-right: 12px;"></i>
+                                <span id="errorList"></span>
                             </div>
                         </div>
 
-                        <!-- Jenis Kelamin -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-3">
-                                Jenis Kelamin<span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <select name="jenis_kelamin"
-                                    class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600 mb-4" required>
-                                <option value="">Pilih jenis kelamin</option>
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
-                            </select>
-                        </div>
+                        @for($p = 1; $p <= $passengers; $p++)
+                        <!-- Data Penumpang {{ $p }} -->
+                        <div style="{{ $p > 1 ? 'margin-top: 32px;' : '' }}">
+                            <h3 class="text-base font-semibold text-gray-900 mb-6">Data Penumpang {{ $p }}</h3>
+                            
+                            <!-- Nama Penumpang -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-0.5">
+                                    Nama Penumpang<span class="text-red-500 ml-1">*</span>
+                                </label>
+                                <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">Sesuai KTP/Passport/SIM (tanpa gelar atau karakter khusus)</p>
+                                <input type="text" name="nama_penumpang[]"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors mb-4"
+                                       placeholder="Masukkan nama lengkap penumpang"
+                                       title="Nama penumpang wajib diisi"
+                                       required>
+                            </div>
 
+                            <!-- NIK -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-0.5">
+                                    NIK (Nomor Induk Kependudukan)<span class="text-red-500 ml-1">*</span>
+                                </label>
+                                <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">16 digit nomor KTP</p>
+                                <input type="text" name="nik[]" maxlength="16" minlength="16" pattern="[0-9]{16}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors mb-4"
+                                       placeholder="Masukkan Nomor Induk Kependudukan"
+                                       title="NIK harus 16 digit angka"
+                                       required>
+                            </div>
+
+                            <!-- Tanggal Lahir -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-0.5">
+                                    Tanggal Lahir<span class="text-red-500 ml-1">*</span>
+                                </label>
+                                <p class="text-xs text-gray-400 mb-2" style="font-size: 11px;">Penumpang Dewasa (Usia 12 tahun ke atas)</p>
+                                <div class="flex gap-3 mb-4">
+                                    <div class="flex-1">
+                                        <select name="birth_day[]"
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                title="Pilih tanggal lahir"
+                                                required>
+                                            <option value="">DD</option>
+                                            @for($i = 1; $i <= 31; $i++)
+                                                <option value="{{ sprintf('%02d', $i) }}">{{ sprintf('%02d', $i) }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                    <div class="flex-2">
+                                        <select name="birth_month[]"
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                title="Pilih bulan lahir"
+                                                required>
+                                            <option value="">MMMM</option>
+                                            <option value="01">January</option>
+                                            <option value="02">February</option>
+                                            <option value="03">March</option>
+                                            <option value="04">April</option>
+                                            <option value="05">May</option>
+                                            <option value="06">June</option>
+                                            <option value="07">July</option>
+                                            <option value="08">August</option>
+                                            <option value="09">September</option>
+                                            <option value="10">October</option>
+                                            <option value="11">November</option>
+                                            <option value="12">December</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex-1">
+                                        <select name="birth_year[]"
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                title="Pilih tahun lahir"
+                                                required>
+                                            <option value="">YYYY</option>
+                                            @for($year = 2024; $year >= 1930; $year--)
+                                                <option value="{{ $year }}">{{ $year }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Jenis Kelamin -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Jenis Kelamin<span class="text-red-500 ml-1">*</span>
+                                </label>
+                                <select name="jenis_kelamin[]"
+                                        class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600 mb-4" 
+                                        title="Pilih jenis kelamin"
+                                        required>
+                                    <option value="">Pilih jenis kelamin</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+                        </div>
+                        @endfor
+
+                        <!-- Submit Button -->
+                        <div class="flex justify-end pt-8">
+                            <button type="submit"
+                                    id="continueToPaymentBtn"
+                                    class="px-8 py-3 text-white font-semibold text-base rounded-full transition-all duration-300 {{ Auth::check() ? 'hover:scale-105 hover:shadow-lg hover:shadow-pink-200' : 'opacity-50 cursor-not-allowed' }}"
+                                    style="background: {{ Auth::check() ? 'linear-gradient(135deg, #ffb894 0%, #fb9590 25%, #dc586d 50%, #a33757 75%, #4c1d3d 100%);' : 'linear-gradient(135deg, #d1d5db 0%, #9ca3af 50%, #6b7280 100%);' }}"
+                                    {{ Auth::check() ? '' : 'disabled' }}
+                                    @if(Auth::check())
+                                        onmouseover="this.style.background='linear-gradient(135deg, #ff9f7a 0%, #fa7b76 25%, #d14553 50%, #932d43 75%, #3d1629 100%)'"
+                                        onmouseout="this.style.background='linear-gradient(135deg, #ffb894 0%, #fb9590 25%, #dc586d 50%, #a33757 75%, #4c1d3d 100%)'"
+                                    @endif>
+                                {{ Auth::check() ? 'Lanjutkan ke Pembayaran' : 'Login untuk Melanjutkan' }}
+                            </button>
+                        </div>
                     </form>
                     </div>
                 </div>
@@ -256,17 +307,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Continue to Payment Button -->
-                <div class="flex justify-end" style="margin-top: 16px; padding-top: 8px; margin-bottom: 32px;">
-                    <button type="button" id="continueToPaymentBtn"
-                            class="px-8 py-3 text-white font-semibold text-base rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-pink-200"
-                            style="background: linear-gradient(135deg, #ffb894 0%, #fb9590 25%, #dc586d 50%, #a33757 75%, #4c1d3d 100%);"
-                            onmouseover="this.style.background='linear-gradient(135deg, #ff9f7a 0%, #fa7b76 25%, #d14553 50%, #932d43 75%, #3d1629 100%)'"
-                            onmouseout="this.style.background='linear-gradient(135deg, #ffb894 0%, #fb9590 25%, #dc586d 50%, #a33757 75%, #4c1d3d 100%)'">
-                        Lanjutkan ke Pembayaran
-                    </button>
-                </div>
             </div>
 
             <!-- Right Section - Flight Summary & Price (40%) -->
@@ -332,7 +372,10 @@
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-700">Harga yang dibayar</span>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xl font-bold text-orange-600">Rp {{ number_format($flight->harga, 0, ',', '.') }}</span>
+                                    <div class="text-right">
+                                        <div class="text-xl font-bold text-orange-600">Rp {{ number_format($totalPrice, 0, ',', '.') }}</div>
+                                        <div class="text-xs text-gray-500">(Rp {{ number_format($flight->harga, 0, ',', '.') }} x {{ $passengers }} penumpang)</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -343,220 +386,83 @@
     </div>
 </div>
 
-<!-- Review Passenger Modal -->
-<div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 p-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">Review Data Penumpang</h2>
-        <p class="text-gray-600 mb-6">Pastikan ejaan dan urutan nama sudah benar. Kesalahan dapat menyebabkan penolakan boarding atau biaya tambahan.</p>
 
-        <!-- Warning Box -->
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 flex items-start gap-3">
-            <div class="flex-shrink-0">
-                <svg class="w-5 h-5 text-yellow-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-            </div>
-            <p class="text-sm text-yellow-700">Maskapai ini mungkin tidak mengizinkan perubahan nama</p>
-        </div>
-
-        <!-- Passenger Info -->
-        <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <div class="flex items-center gap-2 mb-4">
-                <span class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">1</span>
-                <h3 class="font-semibold text-gray-900" id="fullNameDisplay"></h3>
-            </div>
-
-            <div class="space-y-3 text-sm">
-                <div>
-                    <span class="text-gray-500">Nama Lengkap</span>
-                    <p class="font-medium text-gray-900" id="nameDisplay"></p>
-                </div>
-                <div>
-                    <span class="text-gray-500">NIK</span>
-                    <p class="font-medium text-gray-900" id="nikDisplay"></p>
-                </div>
-                <div>
-                    <span class="text-gray-500">Tanggal Lahir</span>
-                    <p class="font-medium text-gray-900" id="dobDisplay"></p>
-                </div>
-                <div>
-                    <span class="text-gray-500">Jenis Kelamin</span>
-                    <p class="font-medium text-gray-900" id="genderDisplay"></p>
-                </div>
-                <div>
-                    <span class="text-gray-500">Kewarganegaraan</span>
-                    <p class="font-medium text-gray-900">Indonesia</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Buttons -->
-        <div class="flex gap-3">
-            <button type="button" id="backBtn" class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition duration-200">
-                Kembali
-            </button>
-            <button type="button" id="confirmBtn" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
-                Konfirmasi
-            </button>
-        </div>
-    </div>
-</div>
 
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const continueBtn = document.getElementById('continueToPaymentBtn');
-    const modal = document.getElementById('reviewModal');
-    const backBtn = document.getElementById('backBtn');
-    const confirmBtn = document.getElementById('confirmBtn');
     const form = document.querySelector('form');
-
-    // Validasi dan show modal
-    continueBtn.addEventListener('click', function() {
-        if (validateForm()) {
-            populateModal();
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-    });
-
-    // Close modal
-    backBtn.addEventListener('click', function() {
-        modal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
-
-    // Submit form
-    confirmBtn.addEventListener('click', function() {
-        form.submit();
-    });
-
-    // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-    });
-
-    function validateForm() {
-        const nama = document.querySelector('input[name="nama_penumpang"]');
-        const nik = document.querySelector('input[name="nik"]');
-        const birthDay = document.querySelector('select[name="birth_day"]');
-        const birthMonth = document.querySelector('select[name="birth_month"]');
-        const birthYear = document.querySelector('select[name="birth_year"]');
-        const gender = document.querySelector('select[name="jenis_kelamin"]');
-
-        let errors = [];
+    const errorContainer = document.getElementById('errorContainer');
+    const errorList = document.getElementById('errorList');
+    
+    form.addEventListener('submit', function(e) {
+        // Reset error container
+        errorContainer.classList.add('hidden');
+        errorList.innerHTML = '';
+        
+        // Collect all required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        let hasEmptyFields = false;
+        let hasInvalidNIK = false;
         let firstErrorField = null;
-
-        // Reset semua styling error
-        [nama, nik, birthDay, birthMonth, birthYear, gender].forEach(field => {
-            field.classList.remove('border-red-500', 'border-red-400');
-            field.classList.add('border-gray-300');
-        });
-
-        // Validasi dan marking error fields
-        if (!nama.value.trim()) {
-            errors.push('Nama penumpang harus diisi');
-            nama.classList.remove('border-gray-300');
-            nama.classList.add('border-red-500');
-            if (!firstErrorField) firstErrorField = nama;
-        }
-
-        if (!nik.value.trim()) {
-            errors.push('NIK harus diisi');
-            nik.classList.remove('border-gray-300');
-            nik.classList.add('border-red-500');
-            if (!firstErrorField) firstErrorField = nik;
-        } else if (nik.value.trim().length !== 16) {
-            errors.push('NIK harus 16 digit');
-            nik.classList.remove('border-gray-300');
-            nik.classList.add('border-red-500');
-            if (!firstErrorField) firstErrorField = nik;
-        }
-
-        if (!birthDay.value) {
-            errors.push('Tanggal lahir harus dipilih');
-            birthDay.classList.remove('border-gray-300');
-            birthDay.classList.add('border-red-400');
-            if (!firstErrorField) firstErrorField = birthDay;
-        }
-
-        if (!birthMonth.value) {
-            errors.push('Bulan lahir harus dipilih');
-            birthMonth.classList.remove('border-gray-300');
-            birthMonth.classList.add('border-red-400');
-            if (!firstErrorField) firstErrorField = birthMonth;
-        }
-
-        if (!birthYear.value) {
-            errors.push('Tahun lahir harus dipilih');
-            birthYear.classList.remove('border-gray-300');
-            birthYear.classList.add('border-red-400');
-            if (!firstErrorField) firstErrorField = birthYear;
-        }
-
-        if (!gender.value) {
-            errors.push('Jenis kelamin harus dipilih');
-            gender.classList.remove('border-gray-300');
-            gender.classList.add('border-red-400');
-            if (!firstErrorField) firstErrorField = gender;
-        }
-
-        if (errors.length > 0) {
-            // Scroll ke field pertama yang error
-            if (firstErrorField) {
-                firstErrorField.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-
-                // Focus ke field tersebut
-                setTimeout(() => {
-                    firstErrorField.focus();
-                }, 500);
+        
+        requiredFields.forEach(function(field) {
+            // Check if field is empty
+            if (!field.value || field.value === '') {
+                hasEmptyFields = true;
+                if (!firstErrorField) {
+                    firstErrorField = field;
+                }
             }
-
-            // Show error alert
-            alert('Mohon lengkapi data berikut:\n• ' + errors.join('\n• '));
-            return false;
+            
+            // Validasi khusus untuk NIK
+            if (field.name === 'nik[]' && field.value) {
+                if (field.value.length !== 16 || !/^\d+$/.test(field.value)) {
+                    hasInvalidNIK = true;
+                    if (!firstErrorField) {
+                        firstErrorField = field;
+                    }
+                }
+            }
+        });
+        
+        let errors = [];
+        
+        // Tambahkan pesan error
+        if (hasEmptyFields) {
+            errors.push('Data harus diisi dengan lengkap!');
         }
-
-        return true;
-    }
-
-    function populateModal() {
-        const nama = document.querySelector('input[name="nama_penumpang"]').value.trim();
-        const nik = document.querySelector('input[name="nik"]').value.trim();
-        const birthDay = document.querySelector('select[name="birth_day"]').value;
-        const birthMonth = document.querySelector('select[name="birth_month"]').value;
-        const birthYear = document.querySelector('select[name="birth_year"]').value;
-        const genderValue = document.querySelector('select[name="jenis_kelamin"]').value;
-
-        // Format nama dengan prefix
-        const genderPrefix = genderValue === 'L' ? 'Tn.' : 'Ny.';
-        const fullName = `${genderPrefix} ${nama}`;
-
-        // Format tanggal lahir
-        const months = {
-            '01': 'Januari', '02': 'Februari', '03': 'Maret', '04': 'April',
-            '05': 'Mei', '06': 'Juni', '07': 'Juli', '08': 'Agustus',
-            '09': 'September', '10': 'Oktober', '11': 'November', '12': 'Desember'
-        };
-        const dateOfBirth = `${birthDay} ${months[birthMonth]} ${birthYear}`;
-
-        const genderText = genderValue === 'L' ? 'Laki-laki' : 'Perempuan';
-
-        // Update modal content
-        document.getElementById('fullNameDisplay').textContent = fullName;
-        document.getElementById('nameDisplay').textContent = nama;
-        document.getElementById('nikDisplay').textContent = nik;
-        document.getElementById('dobDisplay').textContent = dateOfBirth;
-        document.getElementById('genderDisplay').textContent = genderText;
-    }
+        
+        if (hasInvalidNIK) {
+            errors.push('NIK harus terdiri dari 16 digit angka');
+        }
+        
+        // If there are errors
+        if (errors.length > 0) {
+            e.preventDefault();
+            
+            // Show error container
+            errorContainer.classList.remove('hidden');
+            
+            // Display errors
+            errorList.innerHTML = errors.join('<br>');
+            
+            // Scroll to top
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
+            // Focus on first error field
+            if (firstErrorField) {
+                setTimeout(function() {
+                    firstErrorField.focus();
+                }, 300);
+            }
+        }
+    });
 });
 </script>
 @endpush

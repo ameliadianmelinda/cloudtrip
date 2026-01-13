@@ -164,6 +164,11 @@
     $logoPath = $flight->pesawat && $flight->pesawat->maskapai
         ? $flight->pesawat->maskapai->logo
         : null;
+
+    // Hitung jumlah penumpang dan total harga dari pemesanan
+    $passengers = $pemesanan->detailPemesanan->count();
+    $totalPrice = $pemesanan->total_harga;
+    $perTicket = $passengers > 0 ? $totalPrice / $passengers : $flight->harga;
 @endphp
 
 <div class="bg-gray-50 min-h-screen py-8 mt-6" style="margin-top: 24px;">
@@ -305,7 +310,10 @@
                             <div class="flex justify-between items-center">
                                 <span class="text-gray-700">Harga yang dibayar</span>
                                 <div class="flex items-center gap-2">
-                                    <span class="text-xl font-bold text-orange-600">Rp {{ number_format($flight->harga, 0, ',', '.') }}</span>
+                                    <div class="text-right">
+                                        <div class="text-xl font-bold text-orange-600">Rp {{ number_format($totalPrice, 0, ',', '.') }}</div>
+                                        <div class="text-xs text-gray-500">(Rp {{ number_format($perTicket, 0, ',', '.') }} x {{ $passengers }} penumpang)</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -323,11 +331,8 @@
         </div>
         <div class="success-title">Pembayaran Berhasil!</div>
         <div class="success-message">Terima kasih telah menyelesaikan pembayaran. Data pembayaran Anda telah tersimpan.</div>
-        <div style="margin-top: 30px; display: flex; gap: 12px;">
-            <button onclick="goBack()" style="flex: 1; padding: 12px 24px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
-                Kembali
-            </button>
-            <button onclick="goHome()" style="flex: 1; padding: 12px 24px; background: linear-gradient(135deg, #ffb894 0%, #fb9590 25%, #dc586d 50%, #a33757 75%, #4c1d3d 100%); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
+        <div style="margin-top: 30px;">
+            <button onclick="goHome()" style="width: 100%; padding: 12px 24px; background: linear-gradient(135deg, #ffb894 0%, #fb9590 25%, #dc586d 50%, #a33757 75%, #4c1d3d 100%); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
                 Ke Beranda
             </button>
         </div>
@@ -390,62 +395,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function processPayment() {
-    console.log('processPayment function called');
+function processPayment(event) {
+    event.preventDefault();
+    const payButton = document.getElementById('payButton');
+    payButton.disabled = true;
+    payButton.textContent = 'Memproses...';
 
     // Dapatkan metode pembayaran yang dipilih
     const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
-    console.log('Selected method:', selectedMethod);
 
     if (!selectedMethod) {
-        console.log('No payment method selected - showing alert');
         alert('Pilih metode pembayaran terlebih dahulu!');
+        payButton.disabled = false;
+        payButton.textContent = 'Bayar Sekarang';
         return;
     }
 
-    console.log('Payment method selected:', selectedMethod.value);
-
     // Kirim data pembayaran ke server
     const paymentData = {
-        pemesanan_id: {!! $pemesanan->id !!},
-        metode: selectedMethod.value,
-        jumlah: {!! $flight->harga !!},
+        pemesanan_id: {!! $pemesanan->pemesanan_id !!},
+        metode: 'va', // semua pilihan VA disimpan sebagai VA sesuai struktur tabel
+        bank: selectedMethod.value,
+        jumlah: {!! $totalPrice !!},
         status: 'success'
     };
 
-    console.log('Payment data:', paymentData);
-
-    // AJAX request untuk menyimpan pembayaran
     fetch('{{ route("payment.store") }}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('input[name="_token"]') ? document.querySelector('input[name="_token"]').value : ''
         },
         body: JSON.stringify(paymentData)
     })
     .then(response => response.json())
     .then(data => {
-        console.log('Response data:', data);
         if (data.success) {
-            // Tampilkan modal sukses
             const modal = document.getElementById('successModal');
             modal.style.display = 'block';
         } else {
-            alert('Terjadi kesalahan: ' + data.message);
+            alert('Terjadi kesalahan: ' + (data.message || 'Gagal menyimpan pembayaran'));
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
+    .catch(() => {
         alert('Terjadi kesalahan saat memproses pembayaran');
+    })
+    .finally(() => {
+        payButton.disabled = false;
+        payButton.textContent = 'Bayar Sekarang';
     });
-}
-
-function goBack() {
-    // Tutup modal dan kembali ke halaman pembayaran
-    const modal = document.getElementById('successModal');
-    modal.style.display = 'none';
-    location.reload();
 }
 
 function goHome() {

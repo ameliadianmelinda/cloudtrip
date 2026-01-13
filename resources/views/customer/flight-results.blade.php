@@ -76,8 +76,9 @@
                 @endphp
 
                 <!-- Flight Card -->
-                <div class="flight-card p-6 cursor-pointer"
-                     onclick="window.location.href='{{ route('flight.booking', $flight->jadwal_id) }}'">
+                 @php $passengers = $searchData['passengers'] ?? 1; @endphp
+                 <div class="flight-card p-6 cursor-pointer"
+                     onclick="window.location.href='{{ route('flight.booking', ['id' => $flight->jadwal_id, 'passengers' => $passengers]) }}'">
                     <!-- Included Badge -->
                     <div class="flex justify-start mb-6">
                         <div class="rounded-lg px-4 py-2 border-0" style="background-color: #E0F7FA;">
@@ -182,7 +183,7 @@
                             </div>
 
                             <!-- Select Button -->
-                            <a href="{{ route('flight.booking', $flight->jadwal_id) }}" class="inline-block px-8 py-2 rounded-full font-medium text-base transition-all min-w-fit text-gray-700 no-underline"
+                            <a href="{{ route('flight.booking', ['id' => $flight->jadwal_id, 'passengers' => $passengers]) }}" class="inline-block px-8 py-2 rounded-full font-medium text-base transition-all min-w-fit text-gray-700 no-underline"
                                     style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.2) 0%, rgba(251, 149, 144, 0.2) 25%, rgba(220, 88, 109, 0.2) 50%, rgba(163, 55, 87, 0.2) 75%, rgba(76, 29, 61, 0.2) 100%);
                                            border: 1px solid rgba(220, 88, 109, 0.15);"
                                     onmouseover="this.style.background='linear-gradient(135deg, rgba(255, 184, 148, 0.3) 0%, rgba(251, 149, 144, 0.3) 25%, rgba(220, 88, 109, 0.3) 50%, rgba(163, 55, 87, 0.3) 75%, rgba(76, 29, 61, 0.3) 100%)'"

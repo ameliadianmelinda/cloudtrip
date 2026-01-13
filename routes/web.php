@@ -11,6 +11,8 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PemesananController;
+use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\PenumpangController;
 
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');
@@ -65,8 +67,13 @@ Route::delete('/pesawat/{id}', [PesawatController::class, 'destroy'])->name('pes
 
     // Pemesanan (admin)
     Route::get('/admin/pemesanan', [PemesananController::class, 'index'])->name('admin.pemesanan.index');
-    Route::get('/admin/pemesanan/{id}', [PemesananController::class, 'show'])->name('admin.pemesanan.show');
     Route::put('/admin/pemesanan/{id}', [PemesananController::class, 'updateStatus'])->name('admin.pemesanan.updateStatus');
+
+    // Pembayaran (admin)
+    Route::get('/admin/pembayaran', [PembayaranController::class, 'index'])->name('admin.pembayaran.index');
+
+    // Penumpang (admin)
+    Route::get('/admin/penumpang', [PenumpangController::class, 'index'])->name('admin.penumpang.index');
 });
 
 // Pemesanan (customer)

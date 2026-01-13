@@ -28,9 +28,6 @@
                         <button class="flex items-center text-gray-700 hover:text-gray-900 transition duration-200" style="gap: 8px;">
                             <span class="text-sm font-medium">{{ Auth::user()->name ?? 'User' }}</span>
                             <i class="fas fa-user-circle transition-all duration-300" style="font-size: 32px !important; background: linear-gradient(to right, #FFD4B8, #FFC2BC, #E893A7, #C67088, #A56B7A, #7A5C70); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0.8;" onmouseover="this.style.opacity='1'; this.style.transform='scale(1.1)'" onmouseout="this.style.opacity='0.8'; this.style.transform='scale(1)'"></i>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
                         </button>
 
                         <!-- Dropdown Menu (Hidden by default, can be toggled with JavaScript) -->
@@ -55,7 +52,7 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-gray-400">© 2024 CloudTrip Travel Agency. All rights reserved.</p>
+            <p class="text-gray-400">© 2026 CloudTrip Travel Agency. All rights reserved.</p>
         </div>
     </footer>
 

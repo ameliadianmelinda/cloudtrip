@@ -21,7 +21,11 @@
                 </div>
 
                 <!-- Sign In Button -->
-                <a href="{{ route('login') }}" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition duration-200 inline-block text-center">
+                <a href="{{ route('login') }}"
+                   class="text-white px-6 py-2 rounded-full transition-all duration-300 inline-block text-center hover:shadow-lg"
+                   style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.85) 0%, rgba(251, 149, 144, 0.85) 25%, rgba(220, 88, 109, 0.85) 50%, rgba(163, 55, 87, 0.85) 75%, rgba(76, 29, 61, 0.85) 100%);"
+                   onmouseover="this.style.background='linear-gradient(135deg, #FFB894 0%, #FB9590 25%, #DC586D 50%, #A33757 75%, #4C1D3D 100%)'"
+                   onmouseout="this.style.background='linear-gradient(135deg, rgba(255, 184, 148, 0.85) 0%, rgba(251, 149, 144, 0.85) 25%, rgba(220, 88, 109, 0.85) 50%, rgba(163, 55, 87, 0.85) 75%, rgba(76, 29, 61, 0.85) 100%)'">
                     Sign in
                 </a>
             </div>
@@ -36,7 +40,7 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-gray-400">© 2024 CloudTrip Travel Agency. All rights reserved.</p>
+            <p class="text-gray-400">© 2026 CloudTrip Travel Agency. All rights reserved.</p>
         </div>
     </footer>
 

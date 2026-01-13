@@ -6,13 +6,22 @@ use App\Models\JadwalPenerbangan;
 use App\Models\Pesawat;
 use App\Models\Bandara;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class JadwalPenerbanganController extends Controller
 {
     public function index()
     {
         $jadwal = JadwalPenerbangan::with(['pesawat', 'bandaraAsal', 'bandaraTujuan'])->get();
-        return view('admin.jadwal_penerbangan', compact('jadwal'));
+
+        $summary = [
+            'total' => $jadwal->count(),
+            'available' => $jadwal->where('status', 'available')->count(),
+            'delay' => $jadwal->where('status', 'delay')->count(),
+            'cancel' => $jadwal->where('status', 'cancel')->count(),
+        ];
+
+        return view('admin.jadwal_penerbangan', compact('jadwal', 'summary'));
     }
     
     public function create()
@@ -35,7 +44,17 @@ class JadwalPenerbanganController extends Controller
             'status' => 'required|in:available,cancel,delay',
         ]);
 
-        JadwalPenerbangan::create($validated);
+        // Defensive check and graceful error handling for FK constraints
+        if (!Pesawat::where('pesawat_id', $validated['pesawat_id'])->exists()) {
+            return redirect()->back()->withInput()->withErrors(['pesawat_id' => 'Pesawat tidak ditemukan.']);
+        }
+
+        try {
+            JadwalPenerbangan::create($validated);
+        } catch (QueryException $e) {
+            return redirect()->back()->withInput()->withErrors(['general' => 'Terjadi kesalahan saat menyimpan jadwal. Periksa data dan coba lagi.']);
+        }
+
         return redirect()->route('jadwal_penerbangan')->with('success', 'Jadwal penerbangan berhasil ditambahkan');
     }
 
@@ -61,7 +80,16 @@ class JadwalPenerbanganController extends Controller
             'status' => 'required|in:available,cancel,delay',
         ]);
 
-        $jadwal->update($validated);
+        if (!Pesawat::where('pesawat_id', $validated['pesawat_id'])->exists()) {
+            return redirect()->back()->withInput()->withErrors(['pesawat_id' => 'Pesawat tidak ditemukan.']);
+        }
+
+        try {
+            $jadwal->update($validated);
+        } catch (QueryException $e) {
+            return redirect()->back()->withInput()->withErrors(['general' => 'Terjadi kesalahan saat memperbarui jadwal.']);
+        }
+
         return redirect()->route('jadwal_penerbangan')->with('success', 'Jadwal penerbangan berhasil diubah');
     }
 

@@ -1,42 +1,23 @@
 @extends('layout.admin')
 
 @section('content')
-<div class="d-flex align-items-center mb-4">
-    <h2 class="fw-bold">Laporan Jadwal Penerbangan</h2>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card-section">
-            <h6 class="text-muted">Total Jadwal</h6>
-            <h3 class="fw-bold">{{ $summary['total'] }}</h3>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card-section">
-            <h6 class="text-muted">Available</h6>
-            <h3 class="fw-bold text-success">{{ $summary['available'] }}</h3>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card-section">
-            <h6 class="text-muted">Delay</h6>
-            <h3 class="fw-bold text-warning">{{ $summary['delay'] }}</h3>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card-section">
-            <h6 class="text-muted">Cancel</h6>
-            <h3 class="fw-bold text-danger">{{ $summary['cancel'] }}</h3>
-        </div>
-    </div>
-</div>
-
-<!-- Jadwal table removed from laporan as requested -->
-<div class="mt-4 d-flex justify-content-between align-items-center">
-    <h4 class="fw-bold">Ringkasan Transaksi</h4>
+<div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <a href="{{ route('laporan.print') }}" target="_blank" class="btn btn-outline-secondary">Print / PDF</a>
+        <h2 class="fw-bold mb-0">Laporan Transaksi CloudTrip</h2>
+        <div class="text-muted small">Ringkasan dan daftar transaksi CloudTrip</div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        <form class="d-flex align-items-center" onsubmit="return false;">
+            <div class="input-group" style="width:360px;">
+                <span class="input-group-text bg-white border-end-0" style="border-top-left-radius:24px;border-bottom-left-radius:24px;">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input id="trans-search" type="text" class="form-control form-control-sm border-start-0" placeholder="Cari transaksi (kode / nama / bandara / status)...">
+                <button id="trans-clear" class="btn btn-outline-secondary btn-sm" style="border-top-right-radius:24px;border-bottom-right-radius:24px;">✕</button>
+            </div>
+        </form>
+        <a href="{{ route('laporan.print') }}" target="_blank" class="btn btn-outline-secondary btn-sm">Print / PDF</a>
     </div>
 </div>
 
@@ -55,6 +36,7 @@
                     <th>Asal</th>
                     <th>Tujuan</th>
                     <th>Tanggal Pesan</th>
+                    <th>Tanggal Bayar</th>
                     <th class="text-end">Nominal</th>
                     <th>Status</th>
                 </tr>
@@ -68,6 +50,7 @@
                     <td>{{ $p->jadwal->bandaraAsal->nama_bandara ?? '-' }}</td>
                     <td>{{ $p->jadwal->bandaraTujuan->nama_bandara ?? '-' }}</td>
                     <td>{{ $p->tanggal_pesan }}</td>
+                    <td>{{ $p->pembayaran && $p->pembayaran->tanggal_bayar ? $p->pembayaran->tanggal_bayar : '-' }}</td>
                     <td class="text-end">{{ $p->total_harga ? number_format($p->total_harga,0,',','.') : '-' }}</td>
                     <td>{{ ucfirst($p->status) }}</td>
                 </tr>
@@ -76,5 +59,25 @@
         </table>
     </div>
 </div>
+
+<script>
+    (function(){
+        const input = document.getElementById('trans-search');
+        const clearBtn = document.getElementById('trans-clear');
+        const table = document.querySelector('.jadwal-table tbody');
+        if(!input || !table) return;
+
+        function filterRows(){
+            const q = input.value.trim().toLowerCase();
+            for(const row of table.rows){
+                const text = row.innerText.toLowerCase();
+                row.style.display = q === '' ? '' : (text.indexOf(q) !== -1 ? '' : 'none');
+            }
+        }
+
+        input.addEventListener('input', filterRows);
+        clearBtn.addEventListener('click', function(e){ e.preventDefault(); input.value=''; filterRows(); });
+    })();
+</script>
 
 @endsection

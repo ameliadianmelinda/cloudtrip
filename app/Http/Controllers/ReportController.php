@@ -19,7 +19,7 @@ class ReportController extends Controller
             'cancel' => $jadwals->where('status', 'cancel')->count(),
         ];
 
-        $pemesanan = Pemesanan::with(['user','jadwal.bandaraAsal','jadwal.bandaraTujuan'])->orderBy('tanggal_pesan', 'desc')->get();
+        $pemesanan = Pemesanan::with(['user','jadwal.bandaraAsal','jadwal.bandaraTujuan','pembayaran'])->orderBy('tanggal_pesan', 'desc')->get();
 
         $transSummary = [
             'total_transactions' => $pemesanan->count(),

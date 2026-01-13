@@ -37,24 +37,21 @@
 @section('content')
 <div class="bg-white w-full min-h-screen" style="padding-top: 25px !important;">
     <div class="max-w-6xl mx-auto px-4 pb-8">
-        <!-- Header Section -->
+        @if(isset($flights) && $flights->count() > 0)
+        <!-- Header Section - Only show when flights available -->
         <div class="rounded-xl p-6 mb-0 border mt-6"
              style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.2) 0%, rgba(251, 149, 144, 0.2) 25%, rgba(220, 88, 109, 0.2) 50%, rgba(163, 55, 87, 0.2) 75%, rgba(76, 29, 61, 0.2) 100%);
                     border-color: rgba(220, 88, 109, 0.15);">
             <h1 class="text-2xl font-normal text-black">
-                @if(isset($flights) && $flights->count() > 0)
-                    Penerbangan ke {{ $flights->first()->bandaraTujuan->kota_bandara ?? $flights->first()->bandaraTujuan->nama_bandara ?? 'Tujuan' }}
-                @elseif(isset($destination))
-                    Penerbangan ke {{ $destination }}
-                @else
-                    Hasil Pencarian Penerbangan
-                @endif
+                Penerbangan ke {{ $flights->first()->bandaraTujuan->kota_bandara ?? $flights->first()->bandaraTujuan->nama_bandara ?? 'Tujuan' }}
             </h1>
         </div>
+        @endif
 
         <!-- Flight Cards Container -->
+        @if(isset($flights) && $flights->count() > 0)
         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            @forelse($flights as $index => $flight)
+            @foreach($flights as $index => $flight)
                 @php
                     $departure = \Carbon\Carbon::parse($flight->tanggal_berangkat.' '.$flight->waktu_berangkat);
                     $arrival   = \Carbon\Carbon::parse($flight->tanggal_berangkat.' '.$flight->waktu_tiba);
@@ -199,21 +196,74 @@
                     <div class="divider-line"></div>
                 @endif
 
-            @empty
-                <div class="text-center py-16">
-                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
-                    </svg>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Tidak Ada Penerbangan</h3>
-                    <p class="text-gray-600">Maaf, tidak ada penerbangan yang sesuai dengan kriteria pencarian Anda.</p>
-                    <p class="text-sm text-gray-500 mt-2">Coba ubah tanggal atau rute penerbangan Anda.</p>
-                    <a href="{{ route('homepage') }}" class="inline-block mt-4 px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-                       style="background: linear-gradient(135deg, #FFB894, #FB9590, #DC586D); color: white;">
-                        Cari Penerbangan Baru
-                    </a>
-                </div>
-            @endforelse
+            @endforeach
         </div>
+        @else
+            <div class="flex flex-col items-center justify-center px-6" style="padding-top: 150px;">
+                <!-- Stacked Cards Illustration -->
+                <div class="relative mb-10" style="width: 400px; height: 260px;">
+                    <!-- Card 3 (back right) -->
+                    <div class="absolute bg-gray-100 rounded-xl border border-gray-200 shadow-sm"
+                         style="width: 260px; height: 160px; top: 0; right: 0; transform: rotate(10deg);">
+                        <div class="p-4">
+                            <div class="flex gap-2 mb-3">
+                                <div class="w-20 h-3.5 bg-gray-200 rounded"></div>
+                                <div class="w-12 h-3.5 bg-gray-200 rounded ml-auto"></div>
+                            </div>
+                            <div class="w-full h-3 bg-gray-200 rounded mb-2"></div>
+                            <div class="w-3/4 h-3 bg-gray-200 rounded"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 (back left) -->
+                    <div class="absolute bg-gray-50 rounded-xl border border-gray-200 shadow-sm"
+                         style="width: 280px; height: 175px; top: 30px; left: 0; transform: rotate(-8deg);">
+                        <div class="p-4">
+                            <div class="flex gap-2 mb-3">
+                                <div class="w-24 h-4 bg-gray-200 rounded"></div>
+                                <div class="w-14 h-4 bg-gray-200 rounded ml-auto"></div>
+                            </div>
+                            <div class="w-full h-3 bg-gray-200 rounded mb-2"></div>
+                            <div class="w-4/5 h-3 bg-gray-200 rounded mb-2"></div>
+                            <div class="w-2/3 h-3 bg-gray-200 rounded"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 1 (front center) -->
+                    <div class="absolute bg-white rounded-xl border border-gray-200 shadow-md"
+                         style="width: 300px; height: 190px; top: 60px; left: 50%; transform: translateX(-50%);">
+                        <div class="p-5">
+                            <div class="flex gap-2 mb-4">
+                                <div class="w-28 h-4 bg-gray-300 rounded"></div>
+                                <div class="w-16 h-4 bg-gray-200 rounded ml-auto"></div>
+                            </div>
+                            <div class="w-full h-3.5 bg-gray-200 rounded mb-2.5"></div>
+                            <div class="w-full h-3.5 bg-gray-200 rounded mb-2.5"></div>
+                            <div class="w-3/4 h-3.5 bg-gray-200 rounded mb-4"></div>
+                            <div class="flex gap-3">
+                                <div class="w-20 h-3.5 bg-gray-300 rounded"></div>
+                                <div class="w-20 h-3.5 bg-gray-200 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text -->
+                <p class="text-gray-500 text-lg mb-6">Tidak ada jadwal penerbangan yang tersedia</p>
+
+                <!-- Button with Gradient -->
+                <a href="{{ route('homepage') }}"
+                   class="inline-flex items-center gap-2 px-6 py-3 text-white text-sm font-medium rounded-full transition-all duration-300 hover:shadow-xl hover:scale-105"
+                   style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.7) 0%, rgba(251, 149, 144, 0.7) 25%, rgba(220, 88, 109, 0.7) 50%, rgba(163, 55, 87, 0.7) 75%, rgba(76, 29, 61, 0.7) 100%);"
+                   onmouseover="this.style.background='linear-gradient(135deg, rgba(255, 184, 148, 0.9) 0%, rgba(251, 149, 144, 0.9) 25%, rgba(220, 88, 109, 0.9) 50%, rgba(163, 55, 87, 0.9) 75%, rgba(76, 29, 61, 0.9) 100%)'"
+                   onmouseout="this.style.background='linear-gradient(135deg, rgba(255, 184, 148, 0.7) 0%, rgba(251, 149, 144, 0.7) 25%, rgba(220, 88, 109, 0.7) 50%, rgba(163, 55, 87, 0.7) 75%, rgba(76, 29, 61, 0.7) 100%)'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Kembali
+                </a>
+            </div>
+        @endif
     </div>
 </div>
 @endsection

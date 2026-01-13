@@ -1,9 +1,8 @@
 @extends('layout.admin')
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex align-items-center mb-4">
     <h2 class="fw-bold">Laporan Jadwal Penerbangan</h2>
-    <a href="{{ route('jadwal_penerbangan.create') }}" class="btn btn-danger">+ Tambah Jadwal</a>
 </div>
 
 <div class="row mb-4">
@@ -33,50 +32,7 @@
     </div>
 </div>
 
-<div class="card-section">
-    <div class="table-responsive">
-        <table class="table table-striped align-middle jadwal-table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Maskapai</th>
-                    <th>Kode</th>
-                    <th>Asal</th>
-                    <th>Tujuan</th>
-                    <th>Tanggal</th>
-                    <th>Berangkat</th>
-                    <th>Tiba</th>
-                    <th class="text-end">Harga</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($jadwals as $j)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $j->pesawat->maskapai->nama_maskapai ?? '-' }}</td>
-                    <td>{{ $j->pesawat->kode_pesawat ?? '-' }}</td>
-                    <td>{{ $j->bandaraAsal->nama_bandara ?? '-' }}</td>
-                    <td>{{ $j->bandaraTujuan->nama_bandara ?? '-' }}</td>
-                    <td>{{ $j->tanggal_berangkat ? \Carbon\Carbon::parse($j->tanggal_berangkat)->format('d-m-Y') : '-' }}</td>
-                    <td>{{ $j->waktu_berangkat ? \Carbon\Carbon::parse($j->waktu_berangkat)->format('H:i') : '-' }}</td>
-                    <td>{{ $j->waktu_tiba ? \Carbon\Carbon::parse($j->waktu_tiba)->format('H:i') : '-' }}</td>
-                    <td class="text-end">{{ $j->harga ? number_format($j->harga,0,',','.') : '-' }}</td>
-                    <td>
-                        @if($j->status == 'available')
-                            <span class="badge bg-success">Available</span>
-                        @elseif($j->status == 'delay')
-                            <span class="badge bg-warning text-dark">Delay</span>
-                        @else
-                            <span class="badge bg-danger">Cancel</span>
-                        @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
+<!-- Jadwal table removed from laporan as requested -->
 <div class="mt-4 d-flex justify-content-between align-items-center">
     <h4 class="fw-bold">Ringkasan Transaksi</h4>
     <div>

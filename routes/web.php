@@ -12,7 +12,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PemesananController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\JadwalPenerbanganController;
 
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');

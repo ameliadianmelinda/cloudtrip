@@ -98,9 +98,9 @@
                         @csrf
                         <input type="hidden" name="flight_id" value="{{ $flight->jadwal_id }}">
                         <input type="hidden" name="total_passengers" value="{{ $passengers }}">
-                        
+
                         <!-- Debug: Jumlah penumpang = {{ $passengers }} -->
-                        
+
                         <!-- Error Messages Container -->
                         <div id="errorContainer" class="hidden" style="background: #fee; border: 1px solid #fee; border-left: 4px solid #e74c3c; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 14px; color: #e74c3c;">
                             <div class="flex items-center">
@@ -113,7 +113,7 @@
                         <!-- Data Penumpang {{ $p }} -->
                         <div style="{{ $p > 1 ? 'margin-top: 32px;' : '' }}">
                             <h3 class="text-base font-semibold text-gray-900 mb-6">Data Penumpang {{ $p }}</h3>
-                            
+
                             <!-- Nama Penumpang -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-0.5">
@@ -149,7 +149,7 @@
                                 <div class="flex gap-3 mb-4">
                                     <div class="flex-1">
                                         <select name="birth_day[]"
-                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600"
                                                 title="Pilih tanggal lahir"
                                                 required>
                                             <option value="">DD</option>
@@ -160,7 +160,7 @@
                                     </div>
                                     <div class="flex-2">
                                         <select name="birth_month[]"
-                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600"
                                                 title="Pilih bulan lahir"
                                                 required>
                                             <option value="">MMMM</option>
@@ -180,7 +180,7 @@
                                     </div>
                                     <div class="flex-1">
                                         <select name="birth_year[]"
-                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600" 
+                                                class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600"
                                                 title="Pilih tahun lahir"
                                                 required>
                                             <option value="">YYYY</option>
@@ -198,7 +198,7 @@
                                     Jenis Kelamin<span class="text-red-500 ml-1">*</span>
                                 </label>
                                 <select name="jenis_kelamin[]"
-                                        class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600 mb-4" 
+                                        class="custom-select appearance-none w-full px-4 py-3 border border-gray-300 rounded-lg hover:border-black hover:border-opacity-30 focus:ring-0 focus:border-black focus:border-opacity-30 transition-colors text-gray-600 mb-4"
                                         title="Pilih jenis kelamin"
                                         required>
                                     <option value="">Pilih jenis kelamin</option>
@@ -350,8 +350,8 @@
 
                                 <!-- Airline Logo -->
                                 <div class="flex items-center justify-start">
-                                    @if($logoPath && file_exists(public_path('images/' . $logoPath)))
-                                        <img src="{{ asset('images/' . $logoPath) }}" alt="{{ $airlineName }}" class="h-8 max-w-[100px] object-contain">
+                                    @if($logoPath && file_exists(public_path($logoPath)))
+                                        <img src="{{ asset($logoPath) }}" alt="{{ $airlineName }}" class="h-8 max-w-[100px] object-contain">
                                     @else
                                         <div class="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
                                             <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
@@ -396,18 +396,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     const errorContainer = document.getElementById('errorContainer');
     const errorList = document.getElementById('errorList');
-    
+
     form.addEventListener('submit', function(e) {
         // Reset error container
         errorContainer.classList.add('hidden');
         errorList.innerHTML = '';
-        
+
         // Collect all required fields
         const requiredFields = form.querySelectorAll('[required]');
         let hasEmptyFields = false;
         let hasInvalidNIK = false;
         let firstErrorField = null;
-        
+
         requiredFields.forEach(function(field) {
             // Check if field is empty
             if (!field.value || field.value === '') {
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     firstErrorField = field;
                 }
             }
-            
+
             // Validasi khusus untuk NIK
             if (field.name === 'nik[]' && field.value) {
                 if (field.value.length !== 16 || !/^\d+$/.test(field.value)) {
@@ -427,34 +427,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-        
+
         let errors = [];
-        
+
         // Tambahkan pesan error
         if (hasEmptyFields) {
             errors.push('Data harus diisi dengan lengkap!');
         }
-        
+
         if (hasInvalidNIK) {
             errors.push('NIK harus terdiri dari 16 digit angka');
         }
-        
+
         // If there are errors
         if (errors.length > 0) {
             e.preventDefault();
-            
+
             // Show error container
             errorContainer.classList.remove('hidden');
-            
+
             // Display errors
             errorList.innerHTML = errors.join('<br>');
-            
+
             // Scroll to top
             window.scrollTo({
                 top: 0,
                 behavior: 'smooth'
             });
-            
+
             // Focus on first error field
             if (firstErrorField) {
                 setTimeout(function() {

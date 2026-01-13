@@ -81,7 +81,7 @@
                             </div>
                             <div class="flex flex-col items-center mx-4">
                                 <i class="fas fa-plane text-gray-400 text-xl transform -rotate-90 mb-2"></i>
-                                <p class="text-gray-600 text-xs">{{ $order->jadwal ? \Carbon\Carbon::parse($order->jadwal->tanggal_keberangkatan)->format('M d') : 'N/A' }}</p>
+                                <p class="text-gray-600 text-xs">{{ $order->jadwal ? \Carbon\Carbon::parse($order->jadwal->tanggal_berangkat)->format('M d') : 'N/A' }}</p>
                             </div>
                             <div class="text-center flex-1">
                                 <p class="text-gray-600 text-xs font-semibold mb-2">TO</p>
@@ -95,15 +95,15 @@
                     <div class="grid grid-cols-4 gap-4 mb-4">
                         <div>
                             <p class="text-gray-600 text-xs font-semibold mb-1">AIRLINE</p>
-                            <p class="text-gray-900 text-sm font-semibold">{{ $order->jadwal->maskapai->nama_maskapai ?? 'N/A' }}</p>
+                            <p class="text-gray-900 text-sm font-semibold">{{ $order->jadwal->pesawat && $order->jadwal->pesawat->maskapai ? $order->jadwal->pesawat->maskapai->nama_maskapai : 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-gray-600 text-xs font-semibold mb-1">DEPARTURE</p>
-                            <p class="text-gray-900 text-sm font-semibold">{{ $order->jadwal->jam_keberangkatan ?? 'N/A' }}</p>
+                            <p class="text-gray-900 text-sm font-semibold">{{ $order->jadwal->waktu_berangkat ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-gray-600 text-xs font-semibold mb-1">DATE</p>
-                            <p class="text-gray-900 text-sm font-semibold">{{ $order->jadwal ? \Carbon\Carbon::parse($order->jadwal->tanggal_keberangkatan)->format('d M Y') : 'N/A' }}</p>
+                            <p class="text-gray-900 text-sm font-semibold">{{ $order->jadwal ? \Carbon\Carbon::parse($order->jadwal->tanggal_berangkat)->format('d M Y') : 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-gray-600 text-xs font-semibold mb-1">TOTAL</p>
@@ -113,19 +113,19 @@
 
                     <!-- Action Buttons -->
                     <div class="flex gap-2">
-                        <button class="flex-1 px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition duration-200" onclick="showTicketDetail(this)">
+                        <button class="flex-1 px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition duration-200" onclick="showTicketDetail('{{ $order->pemesanan_id }}')">
                             View Details
                         </button>
                         @if($order->status === 'pending')
-                        <button class="flex-1 px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition duration-200">
+                        <a href="{{ route('payment.show', $order->pemesanan_id) }}" class="flex-1 text-center px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition duration-200">
                             Pay Now
-                        </button>
+                        </a>
                         @endif
                     </div>
                 </div>
 
                 <!-- Ticket Detail Modal -->
-                <div id="ticketModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div id="ticketModal-{{ $order->pemesanan_id }}" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
                         <!-- Close Button -->
                         <div class="flex justify-end p-4 border-b">
@@ -148,11 +148,11 @@
                                 <div class="flex justify-between items-center mb-6 pb-6 border-b-2 border-blue-300">
                                     <div>
                                         <p class="text-sm text-gray-600 font-semibold">{{ __('MASKAPAI') }}</p>
-                                        <p class="text-2xl font-bold text-gray-900">{{ $order->jadwal->maskapai->nama_maskapai ?? 'N/A' }}</p>
+                                        <p class="text-2xl font-bold text-gray-900">{{ $order->jadwal->pesawat && $order->jadwal->pesawat->maskapai ? $order->jadwal->pesawat->maskapai->nama_maskapai : 'N/A' }}</p>
                                     </div>
                                     <div class="text-right">
                                         <p class="text-xs text-gray-600">{{ __('BOARDING PASS') }}</p>
-                                        <p class="text-lg font-bold text-blue-600">{{ substr($order->jadwal->maskapai->nama_maskapai ?? '', 0, 2) }}</p>
+                                        <p class="text-lg font-bold text-blue-600">{{ $order->jadwal->pesawat && $order->jadwal->pesawat->maskapai ? substr($order->jadwal->pesawat->maskapai->nama_maskapai, 0, 2) : '' }}</p>
                                     </div>
                                 </div>
 
@@ -162,7 +162,7 @@
                                     <div class="text-center">
                                         <p class="text-5xl font-bold text-gray-900 mb-2">{{ substr($order->jadwal->bandaraAsal->nama_bandara ?? 'N/A', 0, 3) }}</p>
                                         <p class="text-sm text-gray-700 font-semibold">{{ $order->jadwal->bandaraAsal->nama_bandara ?? 'N/A' }}</p>
-                                        <p class="text-xs text-gray-600 mt-2">{{ $order->jadwal->jam_keberangkatan ?? 'N/A' }}</p>
+                                        <p class="text-xs text-gray-600 mt-2">{{ $order->jadwal->waktu_berangkat ?? 'N/A' }}</p>
                                     </div>
 
                                     <!-- Flight Path -->
@@ -172,15 +172,15 @@
                                             <div class="flex-1 h-1 bg-blue-400 mx-2"></div>
                                             <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
                                         </div>
-                                        <p class="text-xs text-gray-600 font-semibold">{{ $order->jadwal ? \Carbon\Carbon::parse($order->jadwal->tanggal_keberangkatan)->format('d M Y') : 'N/A' }}</p>
-                                        <p class="text-xs text-gray-600 mt-1">{{ $order->jadwal ? $order->jadwal->durasi_penerbangan ?? 'N/A' : 'N/A' }}</p>
+                                        <p class="text-xs text-gray-600 font-semibold">{{ $order->jadwal ? \Carbon\Carbon::parse($order->jadwal->tanggal_berangkat)->format('d M Y') : 'N/A' }}</p>
+                                        <p class="text-xs text-gray-600 mt-1">{{ $order->jadwal ? ($order->jadwal->waktu_tiba ?? 'N/A') : 'N/A' }}</p>
                                     </div>
 
                                     <!-- Arrival -->
                                     <div class="text-center">
                                         <p class="text-5xl font-bold text-gray-900 mb-2">{{ substr($order->jadwal->bandaraTujuan->nama_bandara ?? 'N/A', 0, 3) }}</p>
                                         <p class="text-sm text-gray-700 font-semibold">{{ $order->jadwal->bandaraTujuan->nama_bandara ?? 'N/A' }}</p>
-                                        <p class="text-xs text-gray-600 mt-2">{{ $order->jadwal ? \Carbon\Carbon::parse($order->jadwal->tanggal_keberangkatan)->addHours(3)->format('H:i') : 'N/A' }}</p>
+                                        <p class="text-xs text-gray-600 mt-2">{{ $order->jadwal ? ($order->jadwal->waktu_tiba ?? 'N/A') : 'N/A' }}</p>
                                     </div>
                                 </div>
 
@@ -188,15 +188,11 @@
                                 <div class="grid grid-cols-2 gap-4 mb-6 pb-6 border-b-2 border-blue-300">
                                     <div>
                                         <p class="text-xs text-gray-600 font-semibold">{{ __('NAMA PENUMPANG') }}</p>
-                                        <p class="text-lg font-bold text-gray-900">{{ Auth::user()->name }}</p>
+                                        <p class="text-lg font-bold text-gray-900">{{ $order->detailPemesanan && $order->detailPemesanan->count() ? $order->detailPemesanan->pluck('penumpang.nama_penumpang')->implode(', ') : Auth::user()->name }}</p>
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-600 font-semibold">{{ __('REFERENSI BOOKING') }}</p>
                                         <p class="text-lg font-bold text-blue-600">{{ $order->kode_pemesanan ?? 'N/A' }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs text-gray-600 font-semibold">{{ __('KELAS') }}</p>
-                                        <p class="text-lg font-bold text-gray-900">{{ __('EKONOMI') }}</p>
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-600 font-semibold">{{ __('TOTAL HARGA') }}</p>
@@ -236,15 +232,15 @@
 
 <!-- JavaScript untuk Modal -->
 <script>
-    function showTicketDetail(button) {
-        const ticketModal = button.closest('.border').nextElementSibling;
-        if (ticketModal && ticketModal.id === 'ticketModal') {
+    function showTicketDetail(id) {
+        const ticketModal = document.getElementById('ticketModal-' + id);
+        if (ticketModal) {
             ticketModal.classList.remove('hidden');
         }
     }
 
     function closeTicketDetail() {
-        const ticketModals = document.querySelectorAll('#ticketModal');
+        const ticketModals = document.querySelectorAll('[id^="ticketModal-"]');
         ticketModals.forEach(modal => {
             modal.classList.add('hidden');
         });
@@ -252,7 +248,7 @@
 
     // Close modal when clicking outside
     document.addEventListener('click', function(event) {
-        const ticketModals = document.querySelectorAll('#ticketModal');
+        const ticketModals = document.querySelectorAll('[id^="ticketModal-"]');
         ticketModals.forEach(modal => {
             if (event.target === modal) {
                 modal.classList.add('hidden');

@@ -221,8 +221,8 @@
     </div>
     <div class="main-content">
         <div class="topbar">
-            <div>{{ auth()->user()->username ?? 'Admin' }}</div>
-            <a href="{{ route('profile') }}"><i class="fas fa-user-circle profile-icon"></i></a>
+            <div>{{ auth()->user()->name ?? auth()->user()->username ?? 'Admin' }}</div>
+            <span><i class="fas fa-user-circle profile-icon" style="pointer-events: none; opacity: 0.6; cursor: default;"></i></span>
         </div>
         @yield('content')
         @stack('scripts')

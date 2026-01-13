@@ -38,9 +38,18 @@ class PemesananController extends Controller
         try {
             // Get flight data to get the price
             $jadwal = \App\Models\JadwalPenerbangan::findOrFail($validated['flight_id']);
-            
-            // Calculate total price
-            $totalHarga = $jadwal->harga * $validated['total_passengers'];
+
+            // Hitung jumlah penumpang dari array nama_penumpang (lebih akurat)
+            $jumlahPenumpang = count($validated['nama_penumpang']);
+
+            // Calculate total price berdasarkan jumlah penumpang sebenarnya
+            $totalHarga = $jadwal->harga * $jumlahPenumpang;
+
+            Log::info('Booking calculation: ', [
+                'harga_per_tiket' => $jadwal->harga,
+                'jumlah_penumpang' => $jumlahPenumpang,
+                'total_harga' => $totalHarga
+            ]);
 
             // Generate booking code: CT-XXXXX (5 random digits)
             $kodePemesanan = 'CT-' . rand(10000, 99999);
@@ -57,26 +66,28 @@ class PemesananController extends Controller
 
             Log::info('Pemesanan created: ', ['pemesanan_id' => $pemesanan->pemesanan_id, 'kode_pemesanan' => $kodePemesanan, 'total_harga' => $totalHarga]);
 
-            // Loop untuk setiap penumpang
-            for ($i = 0; $i < $validated['total_passengers']; $i++) {
-                // Buat detail penumpang
-                $detailPemesanan = $pemesanan->detailPemesanan()->create([]);
-
-                Log::info('Detail Pemesanan created: ', ['detail_pemesanan_id' => $detailPemesanan->id, 'penumpang_ke' => $i + 1]);
-
+            // Loop untuk setiap penumpang berdasarkan jumlah data yang dikirim
+            for ($i = 0; $i < $jumlahPenumpang; $i++) {
                 // Hitung umur dari tanggal lahir
                 $tanggal_lahir = $validated['birth_year'][$i] . '-' . str_pad($validated['birth_month'][$i], 2, '0', STR_PAD_LEFT) . '-' . str_pad($validated['birth_day'][$i], 2, '0', STR_PAD_LEFT);
                 $umur = \Carbon\Carbon::parse($tanggal_lahir)->age;
 
-                // Buat penumpang
-                $detailPemesanan->penumpang()->create([
+                // Buat penumpang dulu
+                $penumpang = \App\Models\Penumpang::create([
                     'nama_penumpang' => $validated['nama_penumpang'][$i],
                     'nik' => $validated['nik'][$i],
                     'umur' => $umur,
                     'jenis_kelamin' => $validated['jenis_kelamin'][$i],
                 ]);
 
-                Log::info('Penumpang created successfully', ['penumpang_ke' => $i + 1, 'umur' => $umur]);
+                Log::info('Penumpang created: ', ['penumpang_id' => $penumpang->penumpang_id, 'penumpang_ke' => $i + 1, 'umur' => $umur]);
+
+                // Buat detail pemesanan dengan penumpang_id
+                $detailPemesanan = $pemesanan->detailPemesanan()->create([
+                    'penumpang_id' => $penumpang->penumpang_id,
+                ]);
+
+                Log::info('Detail Pemesanan created: ', ['detail_pemesanan_id' => $detailPemesanan->detail_id, 'penumpang_ke' => $i + 1]);
             }
 
             return redirect()->route('payment.show', $pemesanan->pemesanan_id)
@@ -139,7 +150,7 @@ class PemesananController extends Controller
         try {
             $validated = $request->validate([
                 'pemesanan_id' => 'required|exists:pemesanan,pemesanan_id',
-                'metode' => 'required|string|in:transfer,qris,va,bca,mandiri,bri,bni',
+                'metode' => 'required|in:transfer,qris,va',
                 'jumlah' => 'required|numeric|min:0',
                 'status' => 'required|in:success,failed,pending',
                 'bank' => 'nullable|string'
@@ -163,19 +174,23 @@ class PemesananController extends Controller
                 'tanggal_bayar' => now(),
             ]);
 
-            // Simpan data transaksi
-            Transaksi::create([
-                'pemesanan_id' => $validated['pemesanan_id'],
+            // Buat transaksi
+            $transaksi = Transaksi::create([
+                'pemesanan_id' => $pemesanan->pemesanan_id,
                 'pembayaran_id' => $pembayaran->pembayaran_id,
+                'tanggal_transaksi' => now(),
                 'jumlah' => $validated['jumlah'],
                 'metode' => $metode,
-                'status' => $validated['status']
+                'status' => 'completed'
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pembayaran berhasil disimpan',
-                'data' => $pembayaran
+                'message' => 'Pembayaran & transaksi berhasil disimpan',
+                'data' => [
+                    'pembayaran' => $pembayaran,
+                    'transaksi' => $transaksi
+                ]
             ]);
         } catch (\Exception $e) {
             Log::error('Payment store error: ' . $e->getMessage());

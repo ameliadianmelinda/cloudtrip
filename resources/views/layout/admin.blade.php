@@ -126,11 +126,20 @@
             margin-bottom: 25px;
         }
 
-        .profile-bubble {
-            width: 45px;
-            height: 45px;
-            background: var(--c4);
-            border-radius: 50%;
+        .profile-icon {
+            font-size: 38px;
+            background: linear-gradient(to right, #FFD4B8, #FFC2BC, #E893A7, #C67088, #A56B7A, #7A5C70);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0.85;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .profile-icon:hover {
+            opacity: 1;
+            transform: scale(1.1);
         }
 
         .dashboard-card {
@@ -188,15 +197,21 @@
             <a href="{{ route('admin.pemesanan.index') }}" class="menu-item {{ request()->is('admin/pemesanan*') ? 'menu-active' : '' }}">
                 <i class="bi bi-receipt"></i> Pemesanan
             </a>
+            <a href="{{ route('admin.pembayaran.index') }}" class="menu-item {{ request()->is('admin/pembayaran*') ? 'menu-active' : '' }}">
+                <i class="bi bi-credit-card"></i> Pembayaran
+            </a>
+            <a href="{{ route('admin.penumpang.index') }}" class="menu-item {{ request()->is('admin/penumpang*') ? 'menu-active' : '' }}">
+                <i class="bi bi-person-badge"></i> Penumpang
+            </a>
             <a href="{{ route('users') }}" class="menu-item {{ request()->is('users*') ? 'menu-active' : '' }}">
                 <i class="bi bi-people"></i> Users
-            </a> 
+            </a>
             <a href="#" class="menu-item {{ request()->is('#') ? 'menu-active' : '' }}">
                 <i class="bi bi-calendar3"></i> Jadwal Penerbangan
-            </a>    
+            </a>
             <a href="#" class="menu-item {{ request()->is('#') ? 'menu-active' : '' }}">
                 <i class="bi bi-file-earmark-text"></i> Laporan
-            </a> 
+            </a>
             <a href="{{ route('logout') }}" class="menu-item">
                 <i class="bi bi-box-arrow-left"></i> Logout
             </a>
@@ -205,7 +220,7 @@
     <div class="main-content">
         <div class="topbar">
             <div>{{ auth()->user()->username ?? 'Admin' }}</div>
-            <div class="profile-bubble"></div>
+            <i class="fas fa-user-circle profile-icon"></i>
         </div>
         @yield('content')
         @stack('scripts')

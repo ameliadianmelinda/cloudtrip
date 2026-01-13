@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pemesanan', function (Blueprint $table) {
             $table->integer('pemesanan_id', true);
             $table->string('kode_pemesanan', 30)->nullable();
-            $table->integer('user_id')->nullable()->index('user_id');
+            $table->unsignedBigInteger('user_id')->nullable()->index('user_id');
             $table->integer('jadwal_id')->nullable()->index('jadwal_id');
             $table->dateTime('tanggal_pesan')->nullable()->useCurrent();
             $table->decimal('total_harga', 12)->nullable();

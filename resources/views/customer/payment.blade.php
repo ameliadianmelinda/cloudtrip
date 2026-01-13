@@ -289,8 +289,8 @@
 
                                 <!-- Airline Logo -->
                                 <div class="flex items-center justify-start">
-                                    @if($logoPath && file_exists(public_path('images/' . $logoPath)))
-                                        <img src="{{ asset('images/' . $logoPath) }}" alt="{{ $airlineName }}" class="h-8 max-w-[100px] object-contain">
+                                    @if($logoPath && file_exists(public_path($logoPath)))
+                                        <img src="{{ asset($logoPath) }}" alt="{{ $airlineName }}" class="h-8 max-w-[100px] object-contain">
                                     @else
                                         <div class="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
                                             <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">

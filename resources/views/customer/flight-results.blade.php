@@ -109,9 +109,9 @@
                         <div class="flex items-center gap-8 flex-1">
                             <!-- Airline Logo and Name -->
                             <div class="flex flex-col items-center text-center min-w-fit">
-                                @if($logoPath && file_exists(public_path('images/' . $logoPath)))
+                                @if($logoPath && file_exists(public_path($logoPath)))
                                     <!-- Logo dari file -->
-                                    <img src="{{ asset('images/' . $logoPath) }}"
+                                    <img src="{{ asset($logoPath) }}"
                                          alt="{{ $airlineName }}"
                                          class="airline-logo mb-3">
                                 @else

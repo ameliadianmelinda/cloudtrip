@@ -16,11 +16,11 @@
         <div class="promo-content">
             <div class="logo-section">
                 <div class="logo-icon">
-                    <i class="fas fa-cloud"></i>
+                    <img src="{{ asset('images/logo.png') }}" alt="CloudTrip Logo" class="logo-img">
                 </div>
                 <div class="logo-text">CloudTrip</div>
             </div>
-            
+
             <h1 class="promo-title">Jelajahi Dunia Bersama CloudTrip</h1>
             <p class="promo-subtitle">Platform Pemesanan Tiket Pesawat Terpercaya</p>
             <p class="promo-description">
@@ -28,7 +28,7 @@
             </p>
         </div>
     </div>
-    
+
     <!-- Right Side - Form -->
     <div class="form-section">
         <div class="form-container">
@@ -53,14 +53,14 @@
 
             <form action="{{ route('login') }}" method="POST">
                 @csrf
-                
+
                 <div class="form-group">
-                    <input type="email" 
-                           name="email" 
-                           class="form-control @error('email') is-invalid @enderror" 
-                           value="{{ old('email') }}" 
+                    <input type="email"
+                           name="email"
+                           class="form-control @error('email') is-invalid @enderror"
+                           value="{{ old('email') }}"
                            placeholder="Email"
-                           required 
+                           required
                            autofocus>
                     @error('email')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -68,9 +68,9 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="password" 
-                           name="password" 
-                           class="form-control @error('password') is-invalid @enderror" 
+                    <input type="password"
+                           name="password"
+                           class="form-control @error('password') is-invalid @enderror"
                            placeholder="Password"
                            required>
                     @error('password')

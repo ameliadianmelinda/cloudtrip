@@ -15,12 +15,7 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PenumpangController;
 use App\Http\Controllers\ReportController;
 
-Route::get('/', [HomepageController::class, 'index'])->name('homepage');
-Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');
-Route::get('/flight/{id}/detail', [HomepageController::class, 'flightDetail'])->name('flight.detail');
-Route::get('/flight/{id}/booking', [HomepageController::class, 'flightBooking'])->name('flight.booking');
-
-// Authentication routes
+// Authentication routes (guest only)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
@@ -28,8 +23,30 @@ Route::post('/register', [AuthController::class, 'register'])->middleware('guest
 
 Route::get('/logout', function () {
     Auth::logout();
-    return redirect('/');
-})->name('logout');
+    return redirect('/login');
+})->name('logout')->middleware('auth');
+
+// Homepage (public - accessible without login)
+Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+
+// Customer routes (must be logged in)
+Route::middleware('auth')->group(function () {
+    Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');
+    Route::get('/flight/{id}/detail', [HomepageController::class, 'flightDetail'])->name('flight.detail');
+    Route::get('/flight/{id}/booking', [HomepageController::class, 'flightBooking'])->name('flight.booking');
+
+    Route::get('/profile', function () {
+        $pemesanan = \App\Models\Pemesanan::with(['user', 'jadwal.pesawat.maskapai', 'jadwal.bandaraAsal', 'jadwal.bandaraTujuan', 'detailPemesanan.penumpang', 'pembayaran'])
+            ->where('user_id', Auth::id())
+            ->get();
+
+        return view('customer.Profilecustomer', compact('pemesanan'));
+    })->name('profile');
+
+    Route::post('/booking', [PemesananController::class, 'store'])->name('booking.store');
+    Route::get('/payment/{pemesanan}', [PemesananController::class, 'payment'])->name('payment.show');
+    Route::post('/payment/store', [PemesananController::class, 'storePayment'])->name('payment.store');
+});
 
 // Admin Dashboard & Management (admin only)
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -87,21 +104,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Penumpang (admin)
     Route::get('/admin/penumpang', [PenumpangController::class, 'index'])->name('admin.penumpang.index');
-});
-
-// Pemesanan (customer)
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', function () {
-        $pemesanan = \App\Models\Pemesanan::with(['user', 'jadwal.pesawat.maskapai', 'jadwal.bandaraAsal', 'jadwal.bandaraTujuan', 'detailPemesanan.penumpang', 'pembayaran'])
-            ->where('user_id', Auth::id())
-            ->get();
-
-        return view('customer.Profilecustomer', compact('pemesanan'));
-    })->name('profile');
-
-    Route::post('/booking', [PemesananController::class, 'store'])->name('booking.store');
-    Route::get('/payment/{pemesanan}', [PemesananController::class, 'payment'])->name('payment.show');
-    Route::post('/payment/store', [PemesananController::class, 'storePayment'])->name('payment.store');
 });
 
 // Health check route for debugging

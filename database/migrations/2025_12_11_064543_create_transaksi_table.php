@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('transaksi', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('pemesanan_id')->unsigned();
-            $table->bigInteger('pembayaran_id')->unsigned();
+            $table->integer('pemesanan_id');
+            $table->integer('pembayaran_id');
             $table->decimal('jumlah', 15, 2);
             $table->string('metode', 255);
             $table->string('status', 255);

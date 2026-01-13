@@ -36,7 +36,7 @@ class AdminDashboardController extends Controller
         $pembayaranFailed = Pembayaran::where('status', 'failed')->count();
         
         // Get recent bookings
-        $recentPemesanan = Pemesanan::with(['jadwal.maskapai', 'jadwal.bandaraAsal', 'jadwal.bandaraTujuan', 'detailPemesanan'])
+        $recentPemesanan = Pemesanan::with(['jadwal.pesawat.maskapai', 'jadwal.bandaraAsal', 'jadwal.bandaraTujuan', 'detailPemesanan'])
             ->orderBy('tanggal_pesan', 'desc')
             ->take(5)
             ->get();

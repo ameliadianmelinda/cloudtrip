@@ -81,7 +81,7 @@
                 </div>
                 <div class="project-info">
                     <div class="project-name">{{ $order->jadwal->bandaraAsal->nama_bandara ?? 'N/A' }} - {{ $order->jadwal->bandaraTujuan->nama_bandara ?? 'N/A' }}</div>
-                    <div class="project-meta">{{ $order->jadwal->maskapai->nama_maskapai ?? 'N/A' }} • {{ $order->kode_pemesanan }} • {{ \Carbon\Carbon::parse($order->jadwal->tanggal_keberangkatan)->format('d M Y') }}</div>
+                    <div class="project-meta">{{ $order->jadwal->pesawat->maskapai->nama_maskapai ?? 'N/A' }} • {{ $order->kode_pemesanan }} • {{ \Carbon\Carbon::parse($order->jadwal->tanggal_berangkat)->format('d M Y') }}</div>
                 </div>
                 <div class="project-amount">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</div>
             </div>

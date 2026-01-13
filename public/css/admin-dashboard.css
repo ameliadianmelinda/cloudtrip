@@ -281,6 +281,37 @@ body {
     color: #2c3e50; 
 }
 
+/* Jadwal penerbangan table tweaks */
+.jadwal-table thead th {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    padding: 14px 12px;
+    vertical-align: middle;
+}
+.jadwal-table tbody td {
+    padding: 12px;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #2c3e50;
+}
+.jadwal-table td, .jadwal-table th { white-space: nowrap; }
+.jadwal-table td .truncate {
+    display: inline-block;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+.jadwal-table .text-end { padding-right: 18px; }
+.jadwal-table .btn { margin-right: 6px; }
+
+@media (max-width: 992px) {
+    .jadwal-table thead th { font-size: 12px; }
+    .jadwal-table td, .jadwal-table th { white-space: normal; }
+    .jadwal-table td .truncate { max-width: 120px; }
+}
+
 .status-badge { 
     padding: 5px 12px; 
     border-radius: 15px; 

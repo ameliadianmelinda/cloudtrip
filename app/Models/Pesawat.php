@@ -15,4 +15,9 @@ class Pesawat extends Model
     {
         return $this->belongsTo(Maskapai::class, 'maskapai_id', 'maskapai_id');
     }
+
+    public function jadwalPenerbangan()
+    {
+        return $this->hasMany(JadwalPenerbangan::class, 'pesawat_id', 'pesawat_id');
+    }
 }

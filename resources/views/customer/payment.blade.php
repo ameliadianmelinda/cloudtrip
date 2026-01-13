@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 stickySidebar.style.left = originalLeft + 'px';
                 stickySidebar.style.width = originalWidth + 'px';
                 stickySidebar.style.zIndex = '20';
-            } else {    
+            } else {
                 // Normal mode
                 stickySidebar.style.position = 'relative';
                 stickySidebar.style.left = 'auto';
@@ -416,7 +416,7 @@ function processPayment(event) {
         pemesanan_id: {!! $pemesanan->pemesanan_id !!},
         metode: 'va', // semua pilihan VA disimpan sebagai VA sesuai struktur tabel
         bank: selectedMethod.value,
-        jumlah: {!! $flight->harga !!},
+        jumlah: {!! $totalPrice !!},
         status: 'success'
     };
 

@@ -416,7 +416,7 @@ function processPayment(event) {
         pemesanan_id: {!! $pemesanan->pemesanan_id !!},
         metode: 'va', // semua pilihan VA disimpan sebagai VA sesuai struktur tabel
         bank: selectedMethod.value,
-        jumlah: {!! $flight->harga !!},
+        jumlah: {!! $totalPrice !!},
         status: 'success'
     };
 

@@ -52,7 +52,7 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <p class="text-gray-400">© 2024 CloudTrip Travel Agency. All rights reserved.</p>
+            <p class="text-gray-400">© 2026 CloudTrip Travel Agency. All rights reserved.</p>
         </div>
     </footer>
 

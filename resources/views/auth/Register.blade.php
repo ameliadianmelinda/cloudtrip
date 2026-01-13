@@ -16,11 +16,11 @@
         <div class="promo-content">
             <div class="logo-section">
                 <div class="logo-icon">
-                    <i class="fas fa-cloud"></i>
+                    <img src="{{ asset('images/logo.png') }}" alt="CloudTrip Logo" class="logo-img">
                 </div>
                 <div class="logo-text">CloudTrip</div>
             </div>
-            
+
             <h1 class="promo-title">Mulai Petualangan Anda!</h1>
             <p class="promo-subtitle">Bergabung dengan ribuan traveler di CloudTrip</p>
             <p class="promo-description">
@@ -28,7 +28,7 @@
             </p>
         </div>
     </div>
-    
+
     <!-- Right Side - Form -->
     <div class="form-section">
         <div class="form-container">
@@ -51,14 +51,14 @@
 
             <form action="{{ route('register') }}" method="POST">
                 @csrf
-                
+
                 <div class="form-group">
-                    <input type="text" 
-                           name="name" 
-                           class="form-control @error('name') is-invalid @enderror" 
-                           value="{{ old('name') }}" 
+                    <input type="text"
+                           name="name"
+                           class="form-control @error('name') is-invalid @enderror"
+                           value="{{ old('name') }}"
                            placeholder="Nama Lengkap"
-                           required 
+                           required
                            autofocus>
                     @error('name')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -66,10 +66,10 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="email" 
-                           name="email" 
-                           class="form-control @error('email') is-invalid @enderror" 
-                           value="{{ old('email') }}" 
+                    <input type="email"
+                           name="email"
+                           class="form-control @error('email') is-invalid @enderror"
+                           value="{{ old('email') }}"
                            placeholder="Alamat Email"
                            required>
                     @error('email')
@@ -78,9 +78,9 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="password" 
-                           name="password" 
-                           class="form-control @error('password') is-invalid @enderror" 
+                    <input type="password"
+                           name="password"
+                           class="form-control @error('password') is-invalid @enderror"
                            placeholder="Password"
                            required
                            minlength="8">
@@ -93,9 +93,9 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="password" 
-                           name="password_confirmation" 
-                           class="form-control" 
+                    <input type="password"
+                           name="password_confirmation"
+                           class="form-control"
                            placeholder="Konfirmasi Password"
                            required
                            minlength="8">

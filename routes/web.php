@@ -48,12 +48,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/bandara/{id}', [BandaraController::class, 'update'])->name('bandara.update');
     Route::delete('/bandara/{id}', [BandaraController::class, 'destroy'])->name('bandara.destroy');
 
-Route::get('/pesawat', [PesawatController::class, 'index'])->name('pesawat');
-Route::get('/pesawat/create', [PesawatController::class, 'create'])->name('pesawat.create');
-Route::post('/pesawat', [PesawatController::class, 'store'])->name('pesawat.store');
-Route::get('/pesawat/{id}/edit', [PesawatController::class, 'edit'])->name('pesawat.edit');
-Route::put('/pesawat/{id}', [PesawatController::class, 'update'])->name('pesawat.update');
-Route::delete('/pesawat/{id}', [PesawatController::class, 'destroy'])->name('pesawat.destroy');
+    Route::get('/pesawat', [PesawatController::class, 'index'])->name('pesawat');
+    Route::get('/pesawat/create', [PesawatController::class, 'create'])->name('pesawat.create');
+    Route::post('/pesawat', [PesawatController::class, 'store'])->name('pesawat.store');
+    Route::get('/pesawat/{id}/edit', [PesawatController::class, 'edit'])->name('pesawat.edit');
+    Route::put('/pesawat/{id}', [PesawatController::class, 'update'])->name('pesawat.update');
+    Route::delete('/pesawat/{id}', [PesawatController::class, 'destroy'])->name('pesawat.destroy');
 
     // User management (admin only)
     Route::middleware('admin_only')->group(function () {
@@ -78,6 +78,14 @@ Route::delete('/pesawat/{id}', [PesawatController::class, 'destroy'])->name('pes
 
 // Pemesanan (customer)
 Route::middleware('auth')->group(function () {
+    Route::get('/profile', function () {
+        $pemesanan = \App\Models\Pemesanan::with(['user', 'jadwal.pesawat.maskapai', 'jadwal.bandaraAsal', 'jadwal.bandaraTujuan', 'detailPemesanan.penumpang', 'pembayaran'])
+            ->where('user_id', Auth::id())
+            ->get();
+
+        return view('customer.Profilecustomer', compact('pemesanan'));
+    })->name('profile');
+
     Route::post('/booking', [PemesananController::class, 'store'])->name('booking.store');
     Route::get('/payment/{pemesanan}', [PemesananController::class, 'payment'])->name('payment.show');
     Route::post('/payment/store', [PemesananController::class, 'storePayment'])->name('payment.store');

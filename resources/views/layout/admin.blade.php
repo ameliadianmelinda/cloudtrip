@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>CloudTrip Admin Panel</title>
@@ -33,7 +34,7 @@
             position: fixed;
             left: 0;
             top: 0;
-            box-shadow: 3px 0 20px rgba(0,0,0,0.25);
+            box-shadow: 3px 0 20px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
         }
@@ -41,7 +42,7 @@
         .sidebar-header {
             padding: 25px 15px;
             flex-shrink: 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar-logo {
@@ -69,16 +70,16 @@
         }
 
         .sidebar-menu::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 3px;
         }
 
         .sidebar-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .menu-item {
@@ -97,7 +98,7 @@
         }
 
         .menu-item:hover {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateX(4px);
         }
 
@@ -175,6 +176,7 @@
     <link href="{{ asset('css/admin-users.css') }}" rel="stylesheet">
     @stack('styles')
 </head>
+
 <body>
     <div class="sidebar">
         <div class="sidebar-header">
@@ -220,10 +222,11 @@
     <div class="main-content">
         <div class="topbar">
             <div>{{ auth()->user()->username ?? 'Admin' }}</div>
-            <i class="fas fa-user-circle profile-icon"></i>
+            <a href="{{ route('profile') }}"><i class="fas fa-user-circle profile-icon"></i></a>
         </div>
         @yield('content')
         @stack('scripts')
     </div>
 </body>
+
 </html>

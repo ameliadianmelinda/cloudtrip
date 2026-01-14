@@ -92,10 +92,10 @@ class PemesananController extends Controller
 
             return redirect()->route('payment.show', $pemesanan->pemesanan_id)
                 ->with('success', 'Pemesanan berhasil dibuat. Silakan lanjutkan pembayaran.');
-        } catch (\Exception $e) {
-            Log::error('Booking error: ' . $e->getMessage());
-            return back()->with('error', 'Gagal membuat pemesanan: ' . $e->getMessage());
-        }
+            } catch (\Exception $e) {
+                Log::error('Booking error: ' . $e->getMessage());
+                return back()->with('error', 'Gagal membuat pemesanan: ' . $e->getMessage());
+            }
     }
 
     public function payment($pemesanan)

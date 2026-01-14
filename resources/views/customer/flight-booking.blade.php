@@ -78,7 +78,7 @@
                     <div class="p-6">
                         <h2 class="text-xl font-semibold text-gray-900 mb-6">Detail Kontak E-ticket</h2>
 
-                        <!-- Logged in User Info - Full Width -->
+                        <!-- Logged in User -->
                         <div class="flex items-center gap-3 py-3 px-6 -mx-6 mb-6"
                              style="background: linear-gradient(135deg, rgba(255, 184, 148, 0.2) 0%, rgba(251, 149, 144, 0.2) 25%, rgba(220, 88, 109, 0.2) 50%, rgba(163, 55, 87, 0.2) 75%, rgba(76, 29, 61, 0.2) 100%); border-top: 1px solid rgba(220, 88, 109, 0.15); border-bottom: 1px solid rgba(220, 88, 109, 0.15); margin-left: -24px; margin-right: -24px;">
                             <div class="w-8 h-8 rounded-full flex items-center justify-center"
@@ -430,7 +430,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let errors = [];
 
-        // Tambahkan pesan error
         if (hasEmptyFields) {
             errors.push('Data harus diisi dengan lengkap!');
         }
@@ -455,7 +454,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 behavior: 'smooth'
             });
 
-            // Focus on first error field
             if (firstErrorField) {
                 setTimeout(function() {
                     firstErrorField.focus();

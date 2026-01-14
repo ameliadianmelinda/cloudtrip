@@ -20,7 +20,7 @@ class HomepageController extends Controller
 
     public function searchFlights(Request $request)
     {
-        // Debug: log the request data
+
         Log::info('Flight search request:', $request->all());
 
         $request->validate([
@@ -99,7 +99,7 @@ class HomepageController extends Controller
         // Simpan kembali ke session agar konsisten di langkah berikutnya
         session(['passengers' => $passengers]);
 
-        \Log::info('Passengers count: ' . $passengers);
+        Log::info('Passengers count: ' . $passengers);
 
         return view('customer.flight-booking', compact('flight', 'passengers'));
     }

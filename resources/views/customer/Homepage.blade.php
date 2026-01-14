@@ -163,16 +163,16 @@
 @endpush
 
 @section('content')
-    <!-- Hero Section -->
+
     <section class="hero-section py-16 relative">
-        <!-- Floating Clouds -->
+
         <div class="cloud cloud-1"></div>
         <div class="cloud cloud-2"></div>
         <div class="cloud cloud-3"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-8">
-                <!-- Main Title -->
+
                 <h1 class="hero-title text-4xl md:text-5xl lg:text-6xl text-gray-800 mb-2 leading-tight">
                     Layanan Pemesanan Tiket
                 </h1>
@@ -180,12 +180,12 @@
                     <span class="hero-title-gradient">Pesawat Online</span>
                 </h2>
 
-                <!-- Subtitle -->
+
                 <p class="text-gray-500 text-lg max-w-xl mx-auto mb-8" style="animation: fadeInUp 1.2s ease-out;">
                     Temukan penerbangan terbaik dengan harga termurah
                 </p>
 
-                <!-- Airplane Image -->
+
                 <div class="flex justify-center mb-6">
                     <div class="plane-container" style="width: 500px; height: 220px;">
                         <img src="{{ asset('images/pesawat.png') }}" alt="Airplane" class="w-full h-full object-contain drop-shadow-2xl">
@@ -199,10 +199,15 @@
 
                 <!-- Display validation errors -->
                 @if($errors->any())
-                    <div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded mb-4">
-                        <ul class="list-disc list-inside">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
+                    <div class="bg-red-50 border border-[#e53935] px-4 py-3 rounded-lg mb-4 flex items-center gap-3 shadow-sm">
+                        <!-- Icon warning -->
+                        <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="#e53935" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+                        </svg>
+                        <ul class="list-none m-0 p-0">
+                            @foreach(collect($errors->all())->unique() as $error)
+                                <li style="color:#e53935;font-weight:regular;">{{ $error }}</li>
                             @endforeach
                         </ul>
                     </div>

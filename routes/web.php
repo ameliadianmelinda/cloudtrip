@@ -15,7 +15,6 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PenumpangController;
 use App\Http\Controllers\ReportController;
 
-// Authentication routes (guest only)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
@@ -26,10 +25,9 @@ Route::get('/logout', function () {
     return redirect('/login');
 })->name('logout')->middleware('auth');
 
-// Homepage (public - accessible without login)
+
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 
-// Customer routes (must be logged in)
 Route::middleware('auth')->group(function () {
     Route::post('/search-flights', [HomepageController::class, 'searchFlights'])->name('search.flights');
     Route::get('/flight/{id}/detail', [HomepageController::class, 'flightDetail'])->name('flight.detail');
